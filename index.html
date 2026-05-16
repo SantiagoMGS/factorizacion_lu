@@ -152,16 +152,21 @@
               calculan los multiplicadores:
             </p>
             <div class="math-block">
-              \[m_{j,k} = \frac{a_{jk}^{(k)}}{a_{kk}^{(k)}}, \quad j = k+1,
-              \ldots, n\]
+              \[m_{jk} = \frac{a_{jk}}{a_{kk}}, \quad j = k+1, \ldots, n\]
             </div>
+            <p class="muted small">
+              (Notación de Chapra: \(a_{jk}\) denota el valor <em>actual</em>
+              en la matriz tras los pasos previos de eliminación, no el valor
+              original.)
+            </p>
             <p>
               La matriz \(M^{(k)}\) es la identidad con los negativos de estos
               multiplicadores en la columna \(k\) debajo de la diagonal. Tras
-              \(n-1\) pasos:
+              \(n-1\) pasos, la matriz queda triangular superior y la llamamos
+              \(U\):
             </p>
             <div class="math-block">
-              \[U = A^{(n)} = M^{(n-1)} M^{(n-2)} \cdots M^{(1)} A\]
+              \[U = M^{(n-1)} M^{(n-2)} \cdots M^{(1)} A\]
             </div>
           </article>
 
@@ -174,9 +179,7 @@
                 son los pivotes y los coeficientes que quedan tras cada paso.
               </p>
               <div class="math-block">
-                \[U = \begin{bmatrix} a_{11}^{(1)} & a_{12}^{(1)} & \cdots &
-                a_{1n}^{(1)} \\ 0 & a_{22}^{(2)} & & \vdots \\ \vdots & & \ddots
-                & \vdots \\ 0 & \cdots & 0 & a_{nn}^{(n)} \end{bmatrix}\]
+                \[U = \begin{bmatrix} u_{11} & u_{12} & \cdots & u_{1n} \\ 0 & u_{22} & & \vdots \\ \vdots & & \ddots & \vdots \\ 0 & \cdots & 0 & u_{nn} \end{bmatrix}\]
               </div>
             </article>
 
@@ -300,7 +303,7 @@
               <h3>¿Qué pasa cuando hay ceros en la diagonal?</h3>
               <p>
                 Si durante la eliminación gaussiana un pivote
-                \(a_{kk}^{(k)}=0\), no se puede continuar directamente. La
+                \(a_{kk}=0\), no se puede continuar directamente. La
                 solución es realizar un
                 <strong>intercambio de filas</strong> (pivoteo) para colocar un
                 elemento no nulo en la posición pivote.
