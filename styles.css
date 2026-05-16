@@ -215,23 +215,15 @@ body {
   transition:
     border-color 0.25s ease,
     transform 0.25s ease;
-  /* Flex column + height 100% asegura que cuando la card está en una
-     grid, todas las cards de la fila tengan exactamente la misma altura
-     y el contenido pueda distribuirse con justify-content. */
-  display: flex;
-  flex-direction: column;
-  height: 100%;
 }
 
-/* Cuando una card en grid sólo contiene texto introductorio + varias
-   fórmulas (math-blocks), distribuirlas uniformemente para que no quede
-   espacio vacío al final. Usamos `gap` automático vía margin-top:auto
-   en el primer math-block que va después de los párrafos. */
-.grid .card > .math-block:first-of-type {
-  margin-top: auto;
-}
-.grid .card > .math-block:last-of-type {
-  margin-bottom: auto;
+/* En grids, las cards se igualan en altura automáticamente
+   (align-items: stretch por defecto). Usamos flex column para que el
+   contenido pueda distribuirse en el espacio extra de las cards más
+   altas, manteniendo el título arriba. */
+.grid > .card {
+  display: flex;
+  flex-direction: column;
 }
 
 .card:hover {
