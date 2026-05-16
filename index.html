@@ -1,395 +1,662 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Factorización LU — Parte Teórica</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-
-  <!-- ============== HERO ============== -->
-  <header class="hero">
-    <div class="hero__bg"></div>
-    <div class="hero__overlay"></div>
-    <div class="hero__content container">
-      <h1 class="hero__title">Factorización LU</h1>
-      <p class="hero__subtitle">Parte Teórica — Métodos Numéricos</p>
-      <ul class="authors">
-        <li>Santiago Martínez</li>
-        <li>Yamile Barco</li>
-        <li>Steven Penagos</li>
-        <li>Luis Uribe</li>
-      </ul>
-    </div>
-  </header>
-
-  <main>
-
-    <!-- ============== 1. INTRODUCCIÓN ============== -->
-    <section class="section" id="intro">
-      <div class="container">
-        <h2 class="section__title">Introducción y Motivación</h2>
-
-        <div class="grid grid-2">
-          <article class="card">
-            <h3>¿Qué es la factorización LU?</h3>
-            <p>La factorización LU consiste en descomponer una matriz \(A\) de \(n \times n\) como el producto de dos matrices triangulares:</p>
-            <div class="math-block">\[A = LU\]</div>
-            <ul class="bullets">
-              <li><strong>L</strong> (Lower): triangular inferior con unos en la diagonal (Doolittle).</li>
-              <li><strong>U</strong> (Upper): triangular superior con los coeficientes de la eliminación.</li>
-            </ul>
-            <p class="muted">Esta descomposición transforma un problema complejo en dos pasos simples y eficientes de sustitución triangular.</p>
-          </article>
-
-          <article class="card card--accent">
-            <h3>¿Para qué sirve?</h3>
-            <p>Resolver \(A\mathbf{x}=\mathbf{b}\) directamente con eliminación gaussiana cuesta \(O(n^3/3)\). Con la factorización LU disponible:</p>
-            <ol class="steps">
-              <li><strong>Sustitución hacia adelante:</strong> resolver \(L\mathbf{y}=\mathbf{b}\) → costo \(O(n^2)\).</li>
-              <li><strong>Sustitución hacia atrás:</strong> resolver \(U\mathbf{x}=\mathbf{y}\) → costo \(O(n^2)\).</li>
-            </ol>
-            <p><strong>Costo total con LU:</strong> \(O(2n^2)\) una vez obtenida la factorización.</p>
-          </article>
-        </div>
-
-        <aside class="callout">
-          <span class="callout__icon">ⓘ</span>
-          <p>La gran ventaja aparece cuando se deben resolver <strong>múltiples sistemas</strong> \(A\mathbf{x}=\mathbf{b}\) con la <strong>misma matriz</strong> \(A\) pero <strong>distintos vectores</strong> \(\mathbf{b}\). La factorización se calcula una sola vez y cada nuevo sistema se resuelve en \(O(2n^2)\).</p>
-        </aside>
-
-        <h3 class="subhead">Comparación de costos computacionales</h3>
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>\(n\)</th>
-                <th>Eliminación Gaussiana \(n^3/3\)</th>
-                <th>Con LU \(2n^2\)</th>
-                <th>Reducción</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>10</td><td>\(3.3\times 10^2\)</td><td>\(2\times 10^2\)</td><td><span class="badge">40%</span></td></tr>
-              <tr><td>100</td><td>\(3.3\times 10^5\)</td><td>\(2\times 10^4\)</td><td><span class="badge">94%</span></td></tr>
-              <tr><td>1000</td><td>\(3.3\times 10^8\)</td><td>\(2\times 10^6\)</td><td><span class="badge badge--strong">99.4%</span></td></tr>
-            </tbody>
-          </table>
-        </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Factorización LU — Parte Teórica</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- ============== HERO ============== -->
+    <header class="hero">
+      <div class="hero__bg"></div>
+      <div class="hero__overlay"></div>
+      <div class="hero__content container">
+        <h1 class="hero__title">Factorización LU</h1>
+        <p class="hero__subtitle">Parte Teórica — Métodos Numéricos</p>
+        <ul class="authors">
+          <li>Santiago Martínez</li>
+          <li>Yamile Barco</li>
+          <li>Steven Penagos</li>
+          <li>Luis Uribe</li>
+          <li>Sebastián Gonzales</li>
+        </ul>
       </div>
-    </section>
+    </header>
 
-    <!-- ============== 2. CONSTRUCCIÓN ============== -->
-    <section class="section section--alt" id="construccion">
-      <div class="container">
-        <h2 class="section__title">Construcción de la Factorización LU</h2>
+    <main>
+      <!-- ============== 1. INTRODUCCIÓN ============== -->
+      <section class="section" id="intro">
+        <div class="container">
+          <h2 class="section__title">Introducción y Motivación</h2>
 
-        <article class="card">
-          <h3>Matrices de transformación gaussiana</h3>
-          <p>La factorización LU se construye a partir del proceso de eliminación gaussiana. Cada paso \(k\) se representa como una multiplicación por una <strong>matriz de transformación gaussiana</strong> \(M^{(k)}\). Para eliminar los elementos debajo del pivote \(a_{kk}\), se calculan los multiplicadores:</p>
-          <div class="math-block">\[m_{j,k} = \frac{a_{jk}^{(k)}}{a_{kk}^{(k)}}, \quad j = k+1, \ldots, n\]</div>
-          <p>La matriz \(M^{(k)}\) es la identidad con los negativos de estos multiplicadores en la columna \(k\) debajo de la diagonal. Tras \(n-1\) pasos:</p>
-          <div class="math-block">\[U = A^{(n)} = M^{(n-1)} M^{(n-2)} \cdots M^{(1)} A\]</div>
-        </article>
-
-        <div class="grid grid-2">
-          <article class="card">
-            <h3>Obtención de \(U\)</h3>
-            <p>La matriz \(U\) es el resultado final de la eliminación gaussiana — la forma escalonada superior de \(A\). Sus entradas son los pivotes y los coeficientes que quedan tras cada paso.</p>
-            <div class="math-block">\[U = \begin{bmatrix} a_{11}^{(1)} & a_{12}^{(1)} & \cdots & a_{1n}^{(1)} \\ 0 & a_{22}^{(2)} & & \vdots \\ \vdots & & \ddots & \vdots \\ 0 & \cdots & 0 & a_{nn}^{(n)} \end{bmatrix}\]</div>
-          </article>
-
-          <article class="card">
-            <h3>Obtención de \(L\)</h3>
-            <p>Para obtener \(L\), se invierten las transformaciones. La inversa de \(M^{(k)}\) se obtiene cambiando el signo de los multiplicadores. El resultado es elegante: \(L\) se construye colocando directamente los multiplicadores en sus posiciones.</p>
-            <div class="math-block">\[L = \begin{bmatrix} 1 & 0 & \cdots & 0 \\ m_{21} & 1 & & \vdots \\ \vdots & & \ddots & 0 \\ m_{n1} & \cdots & m_{n,n-1} & 1 \end{bmatrix}\]</div>
-          </article>
-        </div>
-
-        <aside class="callout callout--theorem">
-          <span class="callout__icon">★</span>
-          <p><strong>Teorema 6.19.</strong> Si la eliminación gaussiana puede realizarse sobre \(A\mathbf{x}=\mathbf{b}\) sin intercambios de fila, entonces \(A\) admite la factorización \(A=LU\), donde \(L\) es triangular inferior con unos en la diagonal y \(U\) es triangular superior con los pivotes en la diagonal.</p>
-        </aside>
-      </div>
-    </section>
-
-    <!-- ============== 3. ALGORITMO ============== -->
-    <section class="section" id="algoritmo">
-      <div class="container">
-        <h2 class="section__title">Algoritmo de Factorización LU y Resolución</h2>
-        <p class="lede">El <strong>Algoritmo 6.4</strong> implementa el método de Doolittle (\(l_{ii}=1\)). Dados \(n\) y la matriz \(A=[a_{ij}]\), produce \(L\) y \(U\) tales que \(A = LU\).</p>
-
-        <div class="grid grid-3">
-          <article class="card card--step">
-            <div class="step-number">1</div>
-            <h3>Inicialización</h3>
-            <p>Si \(a_{11}=0\): factorización imposible. De lo contrario: \(u_{11}=a_{11}\), \(l_{11}=1\).</p>
-            <p>Primera fila de \(U\) y primera columna de \(L\):</p>
-            <div class="math-block">\[u_{1j}=a_{1j},\; l_{j1}=\frac{a_{j1}}{u_{11}}\]</div>
-          </article>
-
-          <article class="card card--step">
-            <div class="step-number">2</div>
-            <h3>Iteración principal</h3>
-            <p>Para \(i=2,\ldots,n-1\), calcular en orden:</p>
-            <p class="muted small">Diagonal de \(U\):</p>
-            <div class="math-block">\[u_{ii}=a_{ii}-\sum_{k=1}^{i-1} l_{ik} u_{ki}\]</div>
-            <p class="muted small">Fila \(i\) de \(U\):</p>
-            <div class="math-block">\[u_{ij}=a_{ij}-\sum_{k=1}^{i-1} l_{ik} u_{kj}\]</div>
-            <p class="muted small">Columna \(i\) de \(L\):</p>
-            <div class="math-block">\[l_{ji}=\frac{1}{u_{ii}}\!\left[a_{ji}-\sum_{k=1}^{i-1} l_{jk} u_{ki}\right]\]</div>
-          </article>
-
-          <article class="card card--step">
-            <div class="step-number">3</div>
-            <h3>Última diagonal</h3>
-            <p>Al finalizar, calcular:</p>
-            <div class="math-block">\[u_{nn}=a_{nn}-\sum_{k=1}^{n-1} l_{nk} u_{kn}\]</div>
-            <p>Con esto \(L\) y \(U\) quedan completamente determinadas.</p>
-          </article>
-        </div>
-
-        <h3 class="subhead">Resolución del sistema \(A\mathbf{x}=\mathbf{b}\)</h3>
-        <div class="grid grid-2">
-          <article class="card card--accent">
-            <h3>Sustitución hacia adelante (\(L\mathbf{y}=\mathbf{b}\))</h3>
-            <div class="math-block">\[y_1 = b_1\]</div>
-            <div class="math-block">\[y_i = b_i - \sum_{j=1}^{i-1} l_{ij} y_j,\; i=2,\ldots,n\]</div>
-          </article>
-          <article class="card card--accent">
-            <h3>Sustitución hacia atrás (\(U\mathbf{x}=\mathbf{y}\))</h3>
-            <div class="math-block">\[x_n = \frac{y_n}{u_{nn}}\]</div>
-            <div class="math-block">\[x_i = \frac{1}{u_{ii}}\!\left[y_i - \sum_{j=i+1}^{n} u_{ij} x_j\right]\]</div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============== 4. PERMUTACIÓN ============== -->
-    <section class="section section--alt" id="permutacion">
-      <div class="container">
-        <h2 class="section__title">Matrices de Permutación y Factorización \(PA=LU\)</h2>
-
-        <div class="grid grid-2">
-          <article class="card">
-            <h3>¿Qué pasa cuando hay ceros en la diagonal?</h3>
-            <p>Si durante la eliminación gaussiana un pivote \(a_{kk}^{(k)}=0\), no se puede continuar directamente. La solución es realizar un <strong>intercambio de filas</strong> (pivoteo) para colocar un elemento no nulo en la posición pivote.</p>
-            <p>Para gestionar estos intercambios de forma sistemática se introducen las <strong>matrices de permutación</strong>.</p>
-          </article>
-
-          <article class="card">
-            <h3>Matrices de permutación</h3>
-            <p>Una matriz de permutación \(P\) se obtiene reordenando las filas de la identidad \(I_n\). Tiene exactamente un \(1\) en cada fila y cada columna.</p>
-            <div class="math-block">\[P = \begin{bmatrix} 0 & 1 & 0 \\ 1 & 0 & 0 \\ 0 & 0 & 1 \end{bmatrix}\]</div>
-            <aside class="callout callout--inline">
-              <strong>Propiedades clave:</strong>
+          <div class="grid grid-2">
+            <article class="card">
+              <h3>¿Qué es la factorización LU?</h3>
+              <p>
+                La factorización LU consiste en descomponer una matriz \(A\) de
+                \(n \times n\) como el producto de dos matrices triangulares:
+              </p>
+              <div class="math-block">\[A = LU\]</div>
               <ul class="bullets">
-                <li>Multiplicar \(PA\) intercambia filas de \(A\).</li>
-                <li>\(P^{-1} = P^{t}\) (la inversa es la transpuesta).</li>
-                <li>\(P\) es ortogonal: \(PP^{t}=I\).</li>
+                <li>
+                  <strong>L</strong> (Lower): triangular inferior con unos en la
+                  diagonal (Doolittle).
+                </li>
+                <li>
+                  <strong>U</strong> (Upper): triangular superior con los
+                  coeficientes de la eliminación.
+                </li>
               </ul>
-            </aside>
-          </article>
-        </div>
+              <p class="muted">
+                Esta descomposición transforma un problema complejo en dos pasos
+                simples y eficientes de sustitución triangular.
+              </p>
+            </article>
 
-        <article class="card">
-          <h3>Factorización \(PA=LU\)</h3>
-          <p>Para cualquier matriz no singular \(A\), siempre existe una matriz de permutación \(P\) tal que:</p>
-          <div class="math-block">\[PA = LU\]</div>
-          <p>La idea central: \(P\) reordena las filas de \(A\) de modo que la eliminación gaussiana pueda proceder sin más intercambios. Esto garantiza la existencia de la factorización incluso cuando la eliminación directa falla. También puede expresarse como \(A = P^{t}LU\).</p>
-          <p class="muted"><strong>Pivoteo parcial en la práctica:</strong> en implementaciones computacionales no se mueven físicamente las filas. En su lugar se lleva un <em>vector de orden</em> que registra los intercambios, eligiendo siempre como pivote el elemento de mayor valor absoluto en la columna. Esto mejora la estabilidad numérica.</p>
-        </article>
-
-        <div class="chevron-flow">
-          <div class="chevron">
-            <span class="chevron__num">1</span>
-            <strong>Encontrar P</strong>
-            <small>Reordenar filas para evitar ceros en pivote</small>
+            <article class="card card--accent">
+              <h3>¿Para qué sirve?</h3>
+              <p>
+                Resolver \(A\mathbf{x}=\mathbf{b}\) directamente con eliminación
+                gaussiana cuesta \(O(n^3/3)\). Con la factorización LU
+                disponible:
+              </p>
+              <ol class="steps">
+                <li>
+                  <strong>Sustitución hacia adelante:</strong> resolver
+                  \(L\mathbf{y}=\mathbf{b}\) → costo \(O(n^2)\).
+                </li>
+                <li>
+                  <strong>Sustitución hacia atrás:</strong> resolver
+                  \(U\mathbf{x}=\mathbf{y}\) → costo \(O(n^2)\).
+                </li>
+              </ol>
+              <p>
+                <strong>Costo total con LU:</strong> \(O(2n^2)\) una vez
+                obtenida la factorización.
+              </p>
+            </article>
           </div>
-          <div class="chevron">
-            <span class="chevron__num">2</span>
-            <strong>Aplicar LU</strong>
-            <small>Factorizar PA en L y U sin más intercambios</small>
-          </div>
-          <div class="chevron">
-            <span class="chevron__num">3</span>
-            <strong>Resolver sistema</strong>
-            <small>Sustitución hacia adelante y hacia atrás</small>
+
+          <aside class="callout">
+            <span class="callout__icon">ⓘ</span>
+            <p>
+              La gran ventaja aparece cuando se deben resolver
+              <strong>múltiples sistemas</strong> \(A\mathbf{x}=\mathbf{b}\) con
+              la <strong>misma matriz</strong> \(A\) pero
+              <strong>distintos vectores</strong> \(\mathbf{b}\). La
+              factorización se calcula una sola vez y cada nuevo sistema se
+              resuelve en \(O(2n^2)\).
+            </p>
+          </aside>
+
+          <h3 class="subhead">Comparación de costos computacionales</h3>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>\(n\)</th>
+                  <th>Eliminación Gaussiana \(n^3/3\)</th>
+                  <th>Con LU \(2n^2\)</th>
+                  <th>Reducción</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>10</td>
+                  <td>\(3.3\times 10^2\)</td>
+                  <td>\(2\times 10^2\)</td>
+                  <td><span class="badge">40%</span></td>
+                </tr>
+                <tr>
+                  <td>100</td>
+                  <td>\(3.3\times 10^5\)</td>
+                  <td>\(2\times 10^4\)</td>
+                  <td><span class="badge">94%</span></td>
+                </tr>
+                <tr>
+                  <td>1000</td>
+                  <td>\(3.3\times 10^8\)</td>
+                  <td>\(2\times 10^6\)</td>
+                  <td><span class="badge badge--strong">99.4%</span></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- ============== 5. EJEMPLO ============== -->
-    <section class="section" id="ejemplo">
-      <div class="container">
-        <h2 class="section__title">Ejemplo Completo Resuelto</h2>
-        <p class="lede">Resolver el sistema \(A\mathbf{x}=\mathbf{b}\) usando factorización LU, donde:</p>
+      <!-- ============== 2. CONSTRUCCIÓN ============== -->
+      <section class="section section--alt" id="construccion">
+        <div class="container">
+          <h2 class="section__title">Construcción de la Factorización LU</h2>
 
-        <article class="card card--feature">
-          <div class="math-block big">\[A = \begin{bmatrix} 2 & -1 & 1 \\ 3 & 3 & 9 \\ 3 & 3 & 5 \end{bmatrix},\quad \mathbf{b} = \begin{bmatrix} -1 \\ 0 \\ 4 \end{bmatrix}\]</div>
-        </article>
-
-        <div class="chevron-flow chevron-flow--steps">
-          <div class="chevron"><span class="chevron__num">1</span><strong>Eliminación gaussiana</strong><small>Calcular multiplicadores y obtener \(L\) y \(U\)</small></div>
-          <div class="chevron"><span class="chevron__num">2</span><strong>Sustitución hacia adelante</strong><small>Resolver \(L\mathbf{y}=\mathbf{b}\) para obtener \(\mathbf{y}\)</small></div>
-          <div class="chevron"><span class="chevron__num">3</span><strong>Sustitución hacia atrás</strong><small>Resolver \(U\mathbf{x}=\mathbf{y}\) para obtener \(\mathbf{x}\)</small></div>
-        </div>
-
-        <div class="grid grid-2">
           <article class="card">
-            <h3>Iteración 1 — Limpiar columna 1 (pivote: 2)</h3>
-            <p>Multiplicadores: \(m_{21} = \tfrac{3}{2},\; m_{31} = \tfrac{3}{2}\).</p>
-            <ul class="bullets">
-              <li>\(E_2 - \tfrac{3}{2}E_1\): posición \((2,2)\to\tfrac{9}{2}\), posición \((2,3)\to\tfrac{15}{2}\).</li>
-              <li>\(E_3 - \tfrac{3}{2}E_1\): posición \((3,2)\to\tfrac{9}{2}\), posición \((3,3)\to\tfrac{7}{2}\).</li>
+            <h3>Matrices de transformación gaussiana</h3>
+            <p>
+              La factorización LU se construye a partir del proceso de
+              eliminación gaussiana. Cada paso \(k\) se representa como una
+              multiplicación por una
+              <strong>matriz de transformación gaussiana</strong> \(M^{(k)}\).
+              Para eliminar los elementos debajo del pivote \(a_{kk}\), se
+              calculan los multiplicadores:
+            </p>
+            <div class="math-block">
+              \[m_{j,k} = \frac{a_{jk}^{(k)}}{a_{kk}^{(k)}}, \quad j = k+1,
+              \ldots, n\]
+            </div>
+            <p>
+              La matriz \(M^{(k)}\) es la identidad con los negativos de estos
+              multiplicadores en la columna \(k\) debajo de la diagonal. Tras
+              \(n-1\) pasos:
+            </p>
+            <div class="math-block">
+              \[U = A^{(n)} = M^{(n-1)} M^{(n-2)} \cdots M^{(1)} A\]
+            </div>
+          </article>
+
+          <div class="grid grid-2">
+            <article class="card">
+              <h3>Obtención de \(U\)</h3>
+              <p>
+                La matriz \(U\) es el resultado final de la eliminación
+                gaussiana — la forma escalonada superior de \(A\). Sus entradas
+                son los pivotes y los coeficientes que quedan tras cada paso.
+              </p>
+              <div class="math-block">
+                \[U = \begin{bmatrix} a_{11}^{(1)} & a_{12}^{(1)} & \cdots &
+                a_{1n}^{(1)} \\ 0 & a_{22}^{(2)} & & \vdots \\ \vdots & & \ddots
+                & \vdots \\ 0 & \cdots & 0 & a_{nn}^{(n)} \end{bmatrix}\]
+              </div>
+            </article>
+
+            <article class="card">
+              <h3>Obtención de \(L\)</h3>
+              <p>
+                Para obtener \(L\), se invierten las transformaciones. La
+                inversa de \(M^{(k)}\) se obtiene cambiando el signo de los
+                multiplicadores. El resultado es elegante: \(L\) se construye
+                colocando directamente los multiplicadores en sus posiciones.
+              </p>
+              <div class="math-block">
+                \[L = \begin{bmatrix} 1 & 0 & \cdots & 0 \\ m_{21} & 1 & &
+                \vdots \\ \vdots & & \ddots & 0 \\ m_{n1} & \cdots & m_{n,n-1} &
+                1 \end{bmatrix}\]
+              </div>
+            </article>
+          </div>
+
+          <aside class="callout callout--theorem">
+            <span class="callout__icon">★</span>
+            <p>
+              <strong>Teorema 6.19.</strong> Si la eliminación gaussiana puede
+              realizarse sobre \(A\mathbf{x}=\mathbf{b}\) sin intercambios de
+              fila, entonces \(A\) admite la factorización \(A=LU\), donde \(L\)
+              es triangular inferior con unos en la diagonal y \(U\) es
+              triangular superior con los pivotes en la diagonal.
+            </p>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ============== 3. ALGORITMO ============== -->
+      <section class="section" id="algoritmo">
+        <div class="container">
+          <h2 class="section__title">
+            Algoritmo de Factorización LU y Resolución
+          </h2>
+          <p class="lede">
+            El <strong>Algoritmo 6.4</strong> implementa el método de Doolittle
+            (\(l_{ii}=1\)). Dados \(n\) y la matriz \(A=[a_{ij}]\), produce
+            \(L\) y \(U\) tales que \(A = LU\).
+          </p>
+
+          <div class="grid grid-3">
+            <article class="card card--step">
+              <div class="step-number">1</div>
+              <h3>Inicialización</h3>
+              <p>
+                Si \(a_{11}=0\): factorización imposible. De lo contrario:
+                \(u_{11}=a_{11}\), \(l_{11}=1\).
+              </p>
+              <p>Primera fila de \(U\) y primera columna de \(L\):</p>
+              <div class="math-block">
+                \[u_{1j}=a_{1j},\; l_{j1}=\frac{a_{j1}}{u_{11}}\]
+              </div>
+            </article>
+
+            <article class="card card--step">
+              <div class="step-number">2</div>
+              <h3>Iteración principal</h3>
+              <p>Para \(i=2,\ldots,n-1\), calcular en orden:</p>
+              <p class="muted small">Diagonal de \(U\):</p>
+              <div class="math-block">
+                \[u_{ii}=a_{ii}-\sum_{k=1}^{i-1} l_{ik} u_{ki}\]
+              </div>
+              <p class="muted small">Fila \(i\) de \(U\):</p>
+              <div class="math-block">
+                \[u_{ij}=a_{ij}-\sum_{k=1}^{i-1} l_{ik} u_{kj}\]
+              </div>
+              <p class="muted small">Columna \(i\) de \(L\):</p>
+              <div class="math-block">
+                \[l_{ji}=\frac{1}{u_{ii}}\!\left[a_{ji}-\sum_{k=1}^{i-1} l_{jk}
+                u_{ki}\right]\]
+              </div>
+            </article>
+
+            <article class="card card--step">
+              <div class="step-number">3</div>
+              <h3>Última diagonal</h3>
+              <p>Al finalizar, calcular:</p>
+              <div class="math-block">
+                \[u_{nn}=a_{nn}-\sum_{k=1}^{n-1} l_{nk} u_{kn}\]
+              </div>
+              <p>Con esto \(L\) y \(U\) quedan completamente determinadas.</p>
+            </article>
+          </div>
+
+          <h3 class="subhead">
+            Resolución del sistema \(A\mathbf{x}=\mathbf{b}\)
+          </h3>
+          <div class="grid grid-2">
+            <article class="card card--accent">
+              <h3>Sustitución hacia adelante (\(L\mathbf{y}=\mathbf{b}\))</h3>
+              <div class="math-block">\[y_1 = b_1\]</div>
+              <div class="math-block">
+                \[y_i = b_i - \sum_{j=1}^{i-1} l_{ij} y_j,\; i=2,\ldots,n\]
+              </div>
+            </article>
+            <article class="card card--accent">
+              <h3>Sustitución hacia atrás (\(U\mathbf{x}=\mathbf{y}\))</h3>
+              <div class="math-block">\[x_n = \frac{y_n}{u_{nn}}\]</div>
+              <div class="math-block">
+                \[x_i = \frac{1}{u_{ii}}\!\left[y_i - \sum_{j=i+1}^{n} u_{ij}
+                x_j\right]\]
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== 4. PERMUTACIÓN ============== -->
+      <section class="section section--alt" id="permutacion">
+        <div class="container">
+          <h2 class="section__title">
+            Matrices de Permutación y Factorización \(PA=LU\)
+          </h2>
+
+          <div class="grid grid-2">
+            <article class="card">
+              <h3>¿Qué pasa cuando hay ceros en la diagonal?</h3>
+              <p>
+                Si durante la eliminación gaussiana un pivote
+                \(a_{kk}^{(k)}=0\), no se puede continuar directamente. La
+                solución es realizar un
+                <strong>intercambio de filas</strong> (pivoteo) para colocar un
+                elemento no nulo en la posición pivote.
+              </p>
+              <p>
+                Para gestionar estos intercambios de forma sistemática se
+                introducen las <strong>matrices de permutación</strong>.
+              </p>
+            </article>
+
+            <article class="card">
+              <h3>Matrices de permutación</h3>
+              <p>
+                Una matriz de permutación \(P\) se obtiene reordenando las filas
+                de la identidad \(I_n\). Tiene exactamente un \(1\) en cada fila
+                y cada columna.
+              </p>
+              <div class="math-block">
+                \[P = \begin{bmatrix} 0 & 1 & 0 \\ 1 & 0 & 0 \\ 0 & 0 & 1
+                \end{bmatrix}\]
+              </div>
+              <aside class="callout callout--inline">
+                <strong>Propiedades clave:</strong>
+                <ul class="bullets">
+                  <li>Multiplicar \(PA\) intercambia filas de \(A\).</li>
+                  <li>\(P^{-1} = P^{t}\) (la inversa es la transpuesta).</li>
+                  <li>\(P\) es ortogonal: \(PP^{t}=I\).</li>
+                </ul>
+              </aside>
+            </article>
+          </div>
+
+          <article class="card">
+            <h3>Factorización \(PA=LU\)</h3>
+            <p>
+              Para cualquier matriz no singular \(A\), siempre existe una matriz
+              de permutación \(P\) tal que:
+            </p>
+            <div class="math-block">\[PA = LU\]</div>
+            <p>
+              La idea central: \(P\) reordena las filas de \(A\) de modo que la
+              eliminación gaussiana pueda proceder sin más intercambios. Esto
+              garantiza la existencia de la factorización incluso cuando la
+              eliminación directa falla. También puede expresarse como \(A =
+              P^{t}LU\).
+            </p>
+            <p class="muted">
+              <strong>Pivoteo parcial en la práctica:</strong> en
+              implementaciones computacionales no se mueven físicamente las
+              filas. En su lugar se lleva un <em>vector de orden</em> que
+              registra los intercambios, eligiendo siempre como pivote el
+              elemento de mayor valor absoluto en la columna. Esto mejora la
+              estabilidad numérica.
+            </p>
+          </article>
+
+          <div class="chevron-flow">
+            <div class="chevron">
+              <span class="chevron__num">1</span>
+              <strong>Encontrar P</strong>
+              <small>Reordenar filas para evitar ceros en pivote</small>
+            </div>
+            <div class="chevron">
+              <span class="chevron__num">2</span>
+              <strong>Aplicar LU</strong>
+              <small>Factorizar PA en L y U sin más intercambios</small>
+            </div>
+            <div class="chevron">
+              <span class="chevron__num">3</span>
+              <strong>Resolver sistema</strong>
+              <small>Sustitución hacia adelante y hacia atrás</small>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== 5. EJEMPLO ============== -->
+      <section class="section" id="ejemplo">
+        <div class="container">
+          <h2 class="section__title">Ejemplo Completo Resuelto</h2>
+          <p class="lede">
+            Resolver el sistema \(A\mathbf{x}=\mathbf{b}\) usando factorización
+            LU, donde:
+          </p>
+
+          <article class="card card--feature">
+            <div class="math-block big">
+              \[A = \begin{bmatrix} 2 & -1 & 1 \\ 3 & 3 & 9 \\ 3 & 3 & 5
+              \end{bmatrix},\quad \mathbf{b} = \begin{bmatrix} -1 \\ 0 \\ 4
+              \end{bmatrix}\]
+            </div>
+          </article>
+
+          <div class="chevron-flow chevron-flow--steps">
+            <div class="chevron">
+              <span class="chevron__num">1</span
+              ><strong>Eliminación gaussiana</strong
+              ><small>Calcular multiplicadores y obtener \(L\) y \(U\)</small>
+            </div>
+            <div class="chevron">
+              <span class="chevron__num">2</span
+              ><strong>Sustitución hacia adelante</strong
+              ><small
+                >Resolver \(L\mathbf{y}=\mathbf{b}\) para obtener
+                \(\mathbf{y}\)</small
+              >
+            </div>
+            <div class="chevron">
+              <span class="chevron__num">3</span
+              ><strong>Sustitución hacia atrás</strong
+              ><small
+                >Resolver \(U\mathbf{x}=\mathbf{y}\) para obtener
+                \(\mathbf{x}\)</small
+              >
+            </div>
+          </div>
+
+          <div class="grid grid-2">
+            <article class="card">
+              <h3>Iteración 1 — Limpiar columna 1 (pivote: 2)</h3>
+              <p>
+                Multiplicadores: \(m_{21} = \tfrac{3}{2},\; m_{31} =
+                \tfrac{3}{2}\).
+              </p>
+              <ul class="bullets">
+                <li>
+                  \(E_2 - \tfrac{3}{2}E_1\): posición \((2,2)\to\tfrac{9}{2}\),
+                  posición \((2,3)\to\tfrac{15}{2}\).
+                </li>
+                <li>
+                  \(E_3 - \tfrac{3}{2}E_1\): posición \((3,2)\to\tfrac{9}{2}\),
+                  posición \((3,3)\to\tfrac{7}{2}\).
+                </li>
+              </ul>
+            </article>
+
+            <article class="card">
+              <h3>
+                Iteración 2 — Limpiar columna 2 (pivote: \(\tfrac{9}{2}\))
+              </h3>
+              <p>Multiplicador: \(m_{32} = 1\).</p>
+              <ul class="bullets">
+                <li>
+                  \(E_3 - 1 \cdot E_2\): posición \((3,3)\to \tfrac{7}{2} -
+                  \tfrac{15}{2} = -4\).
+                </li>
+              </ul>
+            </article>
+          </div>
+
+          <article class="card card--accent">
+            <h3>Matrices resultantes</h3>
+            <div class="math-block">
+              \[L = \begin{bmatrix} 1 & 0 & 0 \\ 3/2 & 1 & 0 \\ 3/2 & 1 & 1
+              \end{bmatrix},\quad U = \begin{bmatrix} 2 & -1 & 1 \\ 0 & 9/2 &
+              15/2 \\ 0 & 0 & -4 \end{bmatrix}\]
+            </div>
+            <p class="check">Verificación: \(LU = A\) ✓</p>
+          </article>
+
+          <div class="grid grid-2">
+            <article class="card">
+              <h3>Sustitución hacia adelante — \(L\mathbf{y}=\mathbf{b}\)</h3>
+              <div class="math-block">\[y_1 = -1\]</div>
+              <div class="math-block">
+                \[y_2 = 0 - \tfrac{3}{2}(-1) = \tfrac{3}{2}\]
+              </div>
+              <div class="math-block">
+                \[y_3 = 4 - \tfrac{3}{2}(-1) - 1\!\left(\tfrac{3}{2}\right) =
+                4\]
+              </div>
+              <div class="math-block">
+                \[\mathbf{y} = \begin{bmatrix} -1 \\ 3/2 \\ 4 \end{bmatrix}\]
+              </div>
+            </article>
+
+            <article class="card">
+              <h3>Sustitución hacia atrás — \(U\mathbf{x}=\mathbf{y}\)</h3>
+              <div class="math-block">\[x_3 = \frac{4}{-4} = -1\]</div>
+              <div class="math-block">
+                \[x_2 = \frac{\tfrac{3}{2} - \tfrac{15}{2}(-1)}{9/2} =
+                \frac{9}{9/2} = 2\]
+              </div>
+              <div class="math-block">
+                \[x_1 = \frac{-1 - (-1)(2) - 1(-1)}{2} = \frac{2}{2} = 1\]
+              </div>
+            </article>
+          </div>
+
+          <article class="card card--feature">
+            <h3>Solución</h3>
+            <div class="math-block big">
+              \[\boxed{\mathbf{x} = \begin{bmatrix} 1 \\ 2 \\ -1
+              \end{bmatrix}}\]
+            </div>
+            <ul class="bullets check-list">
+              <li>Fila 1: \(2(1)+(-1)(2)+1(-1) = -1\) ✓</li>
+              <li>Fila 2: \(3(1)+3(2)+9(-1) = 0\) ✓</li>
+              <li>Fila 3: \(3(1)+3(2)+5(-1) = 4\) ✓</li>
             </ul>
           </article>
-
-          <article class="card">
-            <h3>Iteración 2 — Limpiar columna 2 (pivote: \(\tfrac{9}{2}\))</h3>
-            <p>Multiplicador: \(m_{32} = 1\).</p>
-            <ul class="bullets">
-              <li>\(E_3 - 1 \cdot E_2\): posición \((3,3)\to \tfrac{7}{2} - \tfrac{15}{2} = -4\).</li>
-            </ul>
-          </article>
         </div>
+      </section>
 
-        <article class="card card--accent">
-          <h3>Matrices resultantes</h3>
-          <div class="math-block">\[L = \begin{bmatrix} 1 & 0 & 0 \\ 3/2 & 1 & 0 \\ 3/2 & 1 & 1 \end{bmatrix},\quad U = \begin{bmatrix} 2 & -1 & 1 \\ 0 & 9/2 & 15/2 \\ 0 & 0 & -4 \end{bmatrix}\]</div>
-          <p class="check">Verificación: \(LU = A\) ✓</p>
-        </article>
-
-        <div class="grid grid-2">
-          <article class="card">
-            <h3>Sustitución hacia adelante — \(L\mathbf{y}=\mathbf{b}\)</h3>
-            <div class="math-block">\[y_1 = -1\]</div>
-            <div class="math-block">\[y_2 = 0 - \tfrac{3}{2}(-1) = \tfrac{3}{2}\]</div>
-            <div class="math-block">\[y_3 = 4 - \tfrac{3}{2}(-1) - 1\!\left(\tfrac{3}{2}\right) = 4\]</div>
-            <div class="math-block">\[\mathbf{y} = \begin{bmatrix} -1 \\ 3/2 \\ 4 \end{bmatrix}\]</div>
-          </article>
+      <!-- ============== 6. PROBLEMA DE APLICACIÓN ============== -->
+      <section class="section section--alt" id="aplicacion">
+        <div class="container">
+          <h2 class="section__title">Problema de Aplicación</h2>
+          <p class="lede">
+            Circuito eléctrico con 3 mallas — Leyes de Kirchhoff.
+          </p>
 
           <article class="card">
-            <h3>Sustitución hacia atrás — \(U\mathbf{x}=\mathbf{y}\)</h3>
-            <div class="math-block">\[x_3 = \frac{4}{-4} = -1\]</div>
-            <div class="math-block">\[x_2 = \frac{\tfrac{3}{2} - \tfrac{15}{2}(-1)}{9/2} = \frac{9}{9/2} = 2\]</div>
-            <div class="math-block">\[x_1 = \frac{-1 - (-1)(2) - 1(-1)}{2} = \frac{2}{2} = 1\]</div>
+            <h3>Planteamiento</h3>
+            <p>
+              En ingeniería eléctrica, la Ley de Voltajes de Kirchhoff (LVK)
+              aplicada a un circuito con 3 mallas produce un sistema de
+              ecuaciones lineales. Consideremos un circuito con resistencias
+              \(R_1=10\,\Omega\), \(R_2=5\,\Omega\), \(R_3=20\,\Omega\),
+              \(R_4=8\,\Omega\), \(R_5=15\,\Omega\), y fuentes de voltaje
+              \(V_1=50\,V\), \(V_2=30\,V\), \(V_3=20\,V\).
+            </p>
+            <p>Las ecuaciones de malla son:</p>
+            <div class="math-block">
+              \[\begin{aligned} (R_1 + R_2)I_1 - R_2 I_2 &= V_1 \\ -R_2 I_1 +
+              (R_2 + R_3 + R_4)I_2 - R_4 I_3 &= V_2 \\ -R_4 I_2 + (R_4 + R_5)I_3
+              &= V_3 \end{aligned}\]
+            </div>
           </article>
+
+          <article class="card card--feature">
+            <h3>Sistema en forma matricial</h3>
+            <div class="math-block big">
+              \[\begin{bmatrix} 15 & -5 & 0 \\ -5 & 33 & -8 \\ 0 & -8 & 23
+              \end{bmatrix} \begin{bmatrix} I_1 \\ I_2 \\ I_3 \end{bmatrix} =
+              \begin{bmatrix} 50 \\ 30 \\ 20 \end{bmatrix}\]
+            </div>
+          </article>
+
+          <div class="grid grid-3">
+            <article class="card card--step">
+              <div class="step-number">1</div>
+              <h3>Primera fila/columna</h3>
+              <p>\(u_{11}=15\), \(u_{12}=-5\), \(u_{13}=0\).</p>
+              <p>\(l_{21}=-\tfrac{5}{15}=-\tfrac{1}{3}\), \(l_{31}=0\).</p>
+            </article>
+            <article class="card card--step">
+              <div class="step-number">2</div>
+              <h3>Segunda etapa</h3>
+              <p>
+                \(u_{22} = 33 - (-\tfrac{1}{3})(-5) = \tfrac{94}{3} \approx
+                31.333\).
+              </p>
+              <p>\(u_{23} = -8\).</p>
+              <p>
+                \(l_{32} = -\tfrac{24}{94} = -\tfrac{12}{47} \approx -0.2553\).
+              </p>
+            </article>
+            <article class="card card--step">
+              <div class="step-number">3</div>
+              <h3>Última diagonal</h3>
+              <p>
+                \(u_{33} = 23 - (-\tfrac{12}{47})(-8) = \tfrac{985}{47} \approx
+                20.957\).
+              </p>
+            </article>
+          </div>
+
+          <article class="card card--accent">
+            <h3>Factorización resultante</h3>
+            <div class="math-block">
+              \[L = \begin{bmatrix} 1 & 0 & 0 \\ -1/3 & 1 & 0 \\ 0 & -12/47 & 1
+              \end{bmatrix},\quad U = \begin{bmatrix} 15 & -5 & 0 \\ 0 & 94/3 &
+              -8 \\ 0 & 0 & 985/47 \end{bmatrix}\]
+            </div>
+          </article>
+
+          <div class="grid grid-2">
+            <article class="card">
+              <h3>Sustitución hacia adelante — \(L\mathbf{y}=\mathbf{b}\)</h3>
+              <div class="math-block">\[y_1 = 50\]</div>
+              <div class="math-block">
+                \[y_2 = 30 - (-\tfrac{1}{3})(50) = \tfrac{140}{3} \approx
+                46.667\]
+              </div>
+              <div class="math-block">
+                \[y_3 = 20 - (-\tfrac{12}{47})\!\left(\tfrac{140}{3}\right) =
+                \tfrac{1500}{47} \approx 31.915\]
+              </div>
+            </article>
+
+            <article class="card">
+              <h3>Sustitución hacia atrás — \(U\mathbf{I}=\mathbf{y}\)</h3>
+              <div class="math-block">
+                \[I_3 = \frac{1500/47}{985/47} = \frac{300}{197} \approx
+                1.523\,A\]
+              </div>
+              <div class="math-block">
+                \[I_2 = \frac{140/3 + 8\,I_3}{94/3} \approx 1.876\,A\]
+              </div>
+              <div class="math-block">
+                \[I_1 = \frac{50 + 5\,I_2}{15} \approx 3.959\,A\]
+              </div>
+            </article>
+          </div>
+
+          <article class="card card--feature">
+            <h3>Resultado</h3>
+            <div class="math-block big">
+              \[\boxed{I_1 \approx 3.96\,A,\quad I_2 \approx 1.88\,A,\quad I_3
+              \approx 1.52\,A}\]
+            </div>
+          </article>
+
+          <aside class="callout callout--theorem">
+            <span class="callout__icon">★</span>
+            <p>
+              <strong>Interpretación.</strong> La factorización LU es
+              especialmente útil en este contexto porque si cambian los voltajes
+              de las fuentes (nuevo vector \(\mathbf{b}\)), no necesitamos
+              refactorizar la matriz — solo repetimos las sustituciones,
+              ahorrando operaciones.
+            </p>
+          </aside>
         </div>
+      </section>
 
-        <article class="card card--feature">
-          <h3>Solución</h3>
-          <div class="math-block big">\[\boxed{\mathbf{x} = \begin{bmatrix} 1 \\ 2 \\ -1 \end{bmatrix}}\]</div>
-          <ul class="bullets check-list">
-            <li>Fila 1: \(2(1)+(-1)(2)+1(-1) = -1\) ✓</li>
-            <li>Fila 2: \(3(1)+3(2)+9(-1) = 0\) ✓</li>
-            <li>Fila 3: \(3(1)+3(2)+5(-1) = 4\) ✓</li>
-          </ul>
-        </article>
-      </div>
-    </section>
-
-    <!-- ============== 6. PROBLEMA DE APLICACIÓN ============== -->
-    <section class="section section--alt" id="aplicacion">
-      <div class="container">
-        <h2 class="section__title">Problema de Aplicación</h2>
-        <p class="lede">Circuito eléctrico con 3 mallas — Leyes de Kirchhoff.</p>
-
-        <article class="card">
-          <h3>Planteamiento</h3>
-          <p>En ingeniería eléctrica, la Ley de Voltajes de Kirchhoff (LVK) aplicada a un circuito con 3 mallas produce un sistema de ecuaciones lineales. Consideremos un circuito con resistencias \(R_1=10\,\Omega\), \(R_2=5\,\Omega\), \(R_3=20\,\Omega\), \(R_4=8\,\Omega\), \(R_5=15\,\Omega\), y fuentes de voltaje \(V_1=50\,V\), \(V_2=30\,V\), \(V_3=20\,V\).</p>
-          <p>Las ecuaciones de malla son:</p>
-          <div class="math-block">\[\begin{aligned}
-            (R_1 + R_2)I_1 - R_2 I_2 &= V_1 \\
-            -R_2 I_1 + (R_2 + R_3 + R_4)I_2 - R_4 I_3 &= V_2 \\
-            -R_4 I_2 + (R_4 + R_5)I_3 &= V_3
-          \end{aligned}\]</div>
-        </article>
-
-        <article class="card card--feature">
-          <h3>Sistema en forma matricial</h3>
-          <div class="math-block big">\[\begin{bmatrix} 15 & -5 & 0 \\ -5 & 33 & -8 \\ 0 & -8 & 23 \end{bmatrix} \begin{bmatrix} I_1 \\ I_2 \\ I_3 \end{bmatrix} = \begin{bmatrix} 50 \\ 30 \\ 20 \end{bmatrix}\]</div>
-        </article>
-
-        <div class="grid grid-3">
-          <article class="card card--step">
-            <div class="step-number">1</div>
-            <h3>Primera fila/columna</h3>
-            <p>\(u_{11}=15\), \(u_{12}=-5\), \(u_{13}=0\).</p>
-            <p>\(l_{21}=-\tfrac{5}{15}=-\tfrac{1}{3}\), \(l_{31}=0\).</p>
-          </article>
-          <article class="card card--step">
-            <div class="step-number">2</div>
-            <h3>Segunda etapa</h3>
-            <p>\(u_{22} = 33 - (-\tfrac{1}{3})(-5) = \tfrac{94}{3} \approx 31.333\).</p>
-            <p>\(u_{23} = -8\).</p>
-            <p>\(l_{32} = -\tfrac{24}{94} = -\tfrac{12}{47} \approx -0.2553\).</p>
-          </article>
-          <article class="card card--step">
-            <div class="step-number">3</div>
-            <h3>Última diagonal</h3>
-            <p>\(u_{33} = 23 - (-\tfrac{12}{47})(-8) = \tfrac{985}{47} \approx 20.957\).</p>
-          </article>
+      <footer class="footer">
+        <div class="container">
+          <p>Métodos Numéricos · Factorización LU</p>
+          <p class="muted small">
+            Santiago Martínez · Yamile Barco · Steven Penagos · Luis Uribe
+          </p>
         </div>
+      </footer>
+    </main>
 
-        <article class="card card--accent">
-          <h3>Factorización resultante</h3>
-          <div class="math-block">\[L = \begin{bmatrix} 1 & 0 & 0 \\ -1/3 & 1 & 0 \\ 0 & -12/47 & 1 \end{bmatrix},\quad U = \begin{bmatrix} 15 & -5 & 0 \\ 0 & 94/3 & -8 \\ 0 & 0 & 985/47 \end{bmatrix}\]</div>
-        </article>
-
-        <div class="grid grid-2">
-          <article class="card">
-            <h3>Sustitución hacia adelante — \(L\mathbf{y}=\mathbf{b}\)</h3>
-            <div class="math-block">\[y_1 = 50\]</div>
-            <div class="math-block">\[y_2 = 30 - (-\tfrac{1}{3})(50) = \tfrac{140}{3} \approx 46.667\]</div>
-            <div class="math-block">\[y_3 = 20 - (-\tfrac{12}{47})\!\left(\tfrac{140}{3}\right) = \tfrac{1500}{47} \approx 31.915\]</div>
-          </article>
-
-          <article class="card">
-            <h3>Sustitución hacia atrás — \(U\mathbf{I}=\mathbf{y}\)</h3>
-            <div class="math-block">\[I_3 = \frac{1500/47}{985/47} = \frac{300}{197} \approx 1.523\,A\]</div>
-            <div class="math-block">\[I_2 = \frac{140/3 + 8\,I_3}{94/3} \approx 1.876\,A\]</div>
-            <div class="math-block">\[I_1 = \frac{50 + 5\,I_2}{15} \approx 3.959\,A\]</div>
-          </article>
-        </div>
-
-        <article class="card card--feature">
-          <h3>Resultado</h3>
-          <div class="math-block big">\[\boxed{I_1 \approx 3.96\,A,\quad I_2 \approx 1.88\,A,\quad I_3 \approx 1.52\,A}\]</div>
-        </article>
-
-        <aside class="callout callout--theorem">
-          <span class="callout__icon">★</span>
-          <p><strong>Interpretación.</strong> La factorización LU es especialmente útil en este contexto porque si cambian los voltajes de las fuentes (nuevo vector \(\mathbf{b}\)), no necesitamos refactorizar la matriz — solo repetimos las sustituciones, ahorrando operaciones.</p>
-        </aside>
-      </div>
-    </section>
-
-    <footer class="footer">
-      <div class="container">
-        <p>Métodos Numéricos · Factorización LU</p>
-        <p class="muted small">Santiago Martínez · Yamile Barco · Steven Penagos · Luis Uribe</p>
-      </div>
-    </footer>
-  </main>
-
-  <!-- KaTeX auto-render -->
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
-    onload="renderMathInElement(document.body, {
-      delimiters: [
-        {left: '$$', right: '$$', display: true},
-        {left: '\\[', right: '\\]', display: true},
-        {left: '$', right: '$', display: false},
-        {left: '\\(', right: '\\)', display: false}
-      ],
-      throwOnError: false
-    });"></script>
-</body>
+    <!-- KaTeX auto-render -->
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+      onload="
+        renderMathInElement(document.body, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '\\[', right: '\\]', display: true },
+            { left: '$', right: '$', display: false },
+            { left: '\\(', right: '\\)', display: false },
+          ],
+          throwOnError: false,
+        })
+      "
+    ></script>
+  </body>
 </html>

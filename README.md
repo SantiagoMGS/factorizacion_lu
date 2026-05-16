@@ -13,11 +13,13 @@ https://factorizacion-lu-r5ttq2n.gamma.site/
 ## Cómo ver el sitio
 
 Opción 1 — abrir directamente:
+
 ```bash
 xdg-open index.html
 ```
 
 Opción 2 — servidor local (recomendado, evita restricciones CORS de algunos navegadores):
+
 ```bash
 python3 -m http.server 8000
 # luego abrir http://localhost:8000
