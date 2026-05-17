@@ -775,8 +775,8 @@ body {
 .matrix-display {
   display: inline-grid;
   gap: 0.15rem;
-  font-family: ui-monospace, "JetBrains Mono", "Fira Code", Menlo, Consolas,
-    monospace;
+  font-family:
+    ui-monospace, "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;
   font-size: 0.95rem;
   position: relative;
   padding: 0.25rem 0.55rem;

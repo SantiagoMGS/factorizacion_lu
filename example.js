@@ -211,7 +211,7 @@
     $('stage-title').textContent = step.title;
     $('stage-text').textContent = step.text;
     const formulaEl = $('stage-formula');
-    formulaEl.innerHTML = step.formula || '';
+    formulaEl.textContent = step.formula || '';
     if (window.renderMathInElement && step.formula) {
       try {
         window.renderMathInElement(formulaEl, {
