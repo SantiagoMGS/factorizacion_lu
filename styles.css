@@ -773,6 +773,18 @@ body {
   margin: 0;
 }
 
+.matrix-op {
+  align-self: center;
+  font-size: 1.8rem;
+  font-weight: 300;
+  color: var(--accent);
+  padding: 0 0.15rem;
+  font-family: ui-monospace, "JetBrains Mono", "Fira Code", Menlo, Consolas,
+    monospace;
+  line-height: 1;
+  user-select: none;
+}
+
 .matrix-box__summary {
   margin-top: 0.6rem;
   padding: 0.5rem 0.75rem;

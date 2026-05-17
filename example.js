@@ -76,7 +76,7 @@
       text:
         'Resolvemos hacia adelante:\n  • y₁ = −1\n  • y₂ = 0 − (3/2)(−1) = 3/2\n  • y₃ = 4 − (3/2)(−1) − 1·(3/2) = 4',
       formula: '\\[y_i = b_i - \\sum_{j<i} l_{ij}\\, y_j\\]',
-      show: ['L', 'b', 'y'],
+      show: ['L', '·', 'y', '=', 'b'],
       matrices: {
         L: [
           [c('1'), c('0'), c('0')],
@@ -95,7 +95,7 @@
       text:
         'Resolvemos desde abajo:\n  • x₃ = 4 / (−4) = −1\n  • x₂ = (3/2 − (15/2)(−1)) / (9/2) = 2\n  • x₁ = (−1 − (−1)(2) − 1(−1)) / 2 = 1',
       formula: '\\[x_i = \\frac{1}{u_{ii}}\\left(y_i - \\sum_{j>i} u_{ij}\\, x_j\\right)\\]',
-      show: ['U', 'y', 'x'],
+      show: ['U', '·', 'x', '=', 'y'],
       matrices: {
         U: [
           [c('2'), c('-1'), c('1')],
@@ -180,8 +180,15 @@
     container.innerHTML = '';
 
     step.show.forEach((key) => {
-      const data = step.matrices[key];
-      if (!data) return;
+      const data = step.matrices && step.matrices[key];
+      if (!data) {
+        // Operator separator (e.g. '·', '=')
+        const op = document.createElement('div');
+        op.className = 'matrix-op fade-in';
+        op.textContent = key;
+        container.appendChild(op);
+        return;
+      }
 
       const box = document.createElement('div');
       box.className = 'matrix-box fade-in';
