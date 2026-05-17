@@ -217,13 +217,14 @@ body {
     transform 0.25s ease;
 }
 
-/* En grids, las cards se igualan en altura automáticamente
-   (align-items: stretch por defecto). Usamos flex column para que el
-   contenido pueda distribuirse en el espacio extra de las cards más
-   altas, manteniendo el título arriba. */
+/* En grids, queremos que todas las cards de una fila tengan la misma
+   altura. align-items: stretch no es suficiente cuando la card es a su
+   vez un flex container — fuerza con height: 100%. flex-direction
+   column permite que el contenido se distribuya en el espacio extra. */
 .grid > .card {
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .card:hover {
@@ -301,6 +302,7 @@ body {
 .grid {
   display: grid;
   gap: 1.5rem;
+  align-items: stretch;
 }
 
 .grid-2 {
