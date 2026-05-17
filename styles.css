@@ -727,6 +727,7 @@ body {
   margin: 0 0 1rem;
   font-size: 0.98rem;
   line-height: 1.6;
+  white-space: pre-line;
 }
 
 .stage-narrative__formula {
@@ -770,6 +771,21 @@ body {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   margin: 0;
+}
+
+.matrix-box__summary {
+  margin-top: 0.6rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(95, 224, 163, 0.1);
+  border: 1px solid rgba(95, 224, 163, 0.35);
+  border-radius: var(--radius-sm);
+  color: #5fe0a3;
+  font-family: ui-monospace, "JetBrains Mono", "Fira Code", Menlo, Consolas,
+    monospace;
+  font-size: 0.9rem;
+  text-align: center;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 .matrix-display {

@@ -74,7 +74,7 @@
     {
       title: 'Sustitución hacia adelante: L · y = b',
       text:
-        'Resolvemos hacia adelante: y₁ = −1; y₂ = 0 − (3/2)(−1) = 3/2; y₃ = 4 − (3/2)(−1) − 1·(3/2) = 4.',
+        'Resolvemos hacia adelante:\n  • y₁ = −1\n  • y₂ = 0 − (3/2)(−1) = 3/2\n  • y₃ = 4 − (3/2)(−1) − 1·(3/2) = 4',
       formula: '\\[y_i = b_i - \\sum_{j<i} l_{ij}\\, y_j\\]',
       show: ['L', 'b', 'y'],
       matrices: {
@@ -84,13 +84,16 @@
           [c('3/2'), c('1'), c('1')],
         ],
         b: [[c('-1')], [c('0')], [c('4')]],
-        y: [[c('-1', 'active')], [c('3/2', 'active')], [c('4', 'active')]],
+        y: [[c('y₁', 'active')], [c('y₂', 'active')], [c('y₃', 'active')]],
+      },
+      summaries: {
+        y: 'y = [ −1,  3/2,  4 ]',
       },
     },
     {
       title: 'Sustitución hacia atrás: U · x = y',
       text:
-        'Desde abajo: x₃ = 4/(−4) = −1; x₂ = (3/2 − (15/2)(−1)) / (9/2) = 2; x₁ = (−1 − (−1)(2) − 1(−1)) / 2 = 1.',
+        'Resolvemos desde abajo:\n  • x₃ = 4 / (−4) = −1\n  • x₂ = (3/2 − (15/2)(−1)) / (9/2) = 2\n  • x₁ = (−1 − (−1)(2) − 1(−1)) / 2 = 1',
       formula: '\\[x_i = \\frac{1}{u_{ii}}\\left(y_i - \\sum_{j>i} u_{ij}\\, x_j\\right)\\]',
       show: ['U', 'y', 'x'],
       matrices: {
@@ -100,7 +103,10 @@
           [c('0'), c('0'), c('-4')],
         ],
         y: [[c('-1')], [c('3/2')], [c('4')]],
-        x: [[c('1', 'active')], [c('2', 'active')], [c('-1', 'active')]],
+        x: [[c('x₁', 'active')], [c('x₂', 'active')], [c('x₃', 'active')]],
+      },
+      summaries: {
+        x: 'x = [ 1,  2,  −1 ]',
       },
     },
     {
@@ -198,6 +204,15 @@
         });
       });
       box.appendChild(grid);
+
+      const summary = step.summaries && step.summaries[key];
+      if (summary) {
+        const sumEl = document.createElement('div');
+        sumEl.className = 'matrix-box__summary';
+        sumEl.textContent = summary;
+        box.appendChild(sumEl);
+      }
+
       container.appendChild(box);
     });
   }
