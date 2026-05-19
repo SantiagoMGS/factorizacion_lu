@@ -563,24 +563,11 @@
     playBtn.setAttribute('aria-label', playing ? 'Pausar' : 'Reproducir');
   }
 
-  function toggleResultCard() {
-    document.querySelectorAll('.result-card').forEach((card) => {
-      const isCurrent = card.dataset.example === currentKey;
-      card.classList.toggle('is-active', isCurrent);
-      if (isCurrent && stepIdx === steps().length - 1) {
-        card.classList.add('is-revealed');
-      } else {
-        card.classList.remove('is-revealed');
-      }
-    });
-  }
-
   function render() {
     updateChips();
     renderMatrices();
     renderNarrative();
     renderControls();
-    toggleResultCard();
     $('example-stage').setAttribute('data-step', String(stepIdx + 1));
   }
 

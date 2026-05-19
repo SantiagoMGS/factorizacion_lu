@@ -1066,33 +1066,6 @@ body {
   margin-left: 0.5rem;
 }
 
-/* --- Result card revealed only at last step --- */
-.result-card {
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  padding: 0 2rem;
-  margin-top: 0;
-  border-width: 0;
-  transition:
-    max-height 0.5s ease,
-    opacity 0.4s ease,
-    padding 0.4s ease,
-    margin-top 0.4s ease;
-}
-
-.result-card:not(.is-active) {
-  display: none;
-}
-
-.result-card.is-active.is-revealed {
-  max-height: 1400px;
-  opacity: 1;
-  padding: 2rem;
-  margin-top: 1.5rem;
-  border-width: 1px;
-}
-
 /* --- Fade-in helper para narrative al cambiar de paso --- */
 .fade-in {
   animation: stage-fade-in 0.4s ease;
