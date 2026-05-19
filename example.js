@@ -141,29 +141,22 @@
   // ===================================================================
   const STEPS_4X4 = [
     {
-      title: 'Iteración 1 — Pivoteo y eliminación columna 1',
+      title: 'Pivoteo 1 — Intercambio filas 1 ↔ 3',
       text:
-        'El pivote a₁₁ = 0 → no podemos dividir. Buscamos en la columna 1 el\n' +
-        'elemento de mayor valor absoluto: |2| en la fila 3. Intercambiamos\n' +
-        'filas 1 y 3 (registrado en P).\n' +
+        'El pivote a₁₁ = 0 → no podemos dividir.\n' +
+        'Buscamos en la columna 1 el elemento de mayor valor absoluto:\n' +
+        '|2| en la fila 3 es el mayor.\n' +
         '\n' +
-        'Con el nuevo pivote a₁₁ = 2:\n' +
-        '  • m₂₁ = 1/2,  m₃₁ = 0,  m₄₁ = 1/2\n' +
-        '  • E_i ← E_i − m_{i1}·E₁  (para i = 2, 3, 4)',
-      formula: '\\[\\text{Si } a_{kk}=0, \\text{ intercambiar filas. Luego } E_i \\leftarrow E_i - m_{i1}\\, E_1\\]',
-      show: ['A', 'L', 'P'],
+        'Intercambiamos filas 1 y 3, y registramos el cambio en P.\n' +
+        'L sigue siendo la identidad — todavía no calculamos multiplicadores.',
+      formula: '\\[\\text{Si } a_{kk}=0 \\text{ o muy chico, intercambiar filas según } |a_{ik}| \\text{ máximo}\\]',
+      show: ['A', 'P'],
       matrices: {
         A: [
           [c('2', 'active'), c('-1', 'active'), c('0', 'active'), c('1', 'active')],
-          [c('0', 'computed'), c('1/2', 'active'), c('1', 'active'), c('-3/2', 'active')],
-          [c('0', 'computed'), c('2', 'active'), c('-1', 'active'), c('1', 'active')],
-          [c('0', 'computed'), c('3/2', 'active'), c('-1', 'active'), c('3/2', 'active')],
-        ],
-        L: [
-          [c('1'), c('0'), c('0'), c('0')],
-          [c('1/2', 'active'), c('1'), c('0'), c('0')],
-          [c('0', 'active'), G(), c('1'), c('0')],
-          [c('1/2', 'active'), G(), G(), c('1')],
+          [c('1'), c('0'), c('1'), c('-1')],
+          [c('0', 'active'), c('2', 'active'), c('-1', 'active'), c('1', 'active')],
+          [c('1'), c('1'), c('-1'), c('2')],
         ],
         P: [
           [c('0'), c('0'), c('1', 'active'), c('0')],
@@ -174,29 +167,54 @@
       },
     },
     {
-      title: 'Iteración 2 — Pivoteo y eliminación columna 2',
+      title: 'Eliminación 1 — Columna 1',
       text:
-        'Pivote actual a₂₂ = 1/2 (chico). En la columna 2 (filas 2-4) el mayor\n' +
-        'es |2| en la fila 3. Intercambiamos filas 2 y 3. ¡Importante! También\n' +
-        'se intercambian las entradas ya calculadas de L (columna 1).\n' +
+        'Con el nuevo pivote a₁₁ = 2 calculamos los multiplicadores:\n' +
+        '  • m₂₁ = 1/2\n' +
+        '  • m₃₁ = 0\n' +
+        '  • m₄₁ = 1/2\n' +
         '\n' +
-        'Con el nuevo pivote a₂₂ = 2:\n' +
-        '  • m₃₂ = (1/2)/2 = 1/4\n' +
-        '  • m₄₂ = (3/2)/2 = 3/4',
-      formula: '\\[m_{i2} = \\tfrac{a_{i2}}{a_{22}}, \\quad E_i \\leftarrow E_i - m_{i2}\\, E_2\\]',
+        'Aplicamos E_i ← E_i − m_{i1}·E₁ a las filas 2, 3 y 4.\n' +
+        'Los multiplicadores quedan registrados en L.',
+      formula: '\\[m_{i1} = \\tfrac{a_{i1}}{a_{11}}, \\quad E_i \\leftarrow E_i - m_{i1}\\, E_1\\]',
+      show: ['A', 'L'],
+      matrices: {
+        A: [
+          [c('2'), c('-1'), c('0'), c('1')],
+          [c('0', 'computed'), c('1/2', 'active'), c('1', 'active'), c('-3/2', 'active')],
+          [c('0', 'computed'), c('2', 'active'), c('-1', 'active'), c('1', 'active')],
+          [c('0', 'computed'), c('3/2', 'active'), c('-1', 'active'), c('3/2', 'active')],
+        ],
+        L: [
+          [c('1'), c('0'), c('0'), c('0')],
+          [c('1/2', 'active'), c('1'), c('0'), c('0')],
+          [c('0', 'active'), G(), c('1'), c('0')],
+          [c('1/2', 'active'), G(), G(), c('1')],
+        ],
+      },
+    },
+    {
+      title: 'Pivoteo 2 — Intercambio filas 2 ↔ 3',
+      text:
+        'Pivote actual a₂₂ = 1/2 es chico. En la columna 2 (filas 2-4) el\n' +
+        'mayor en valor absoluto es |2| en la fila 3. Intercambiamos filas 2 y 3.\n' +
+        '\n' +
+        '¡Importante! También se intercambian las entradas ya calculadas de L\n' +
+        '(columna 1): l₂₁ y l₃₁ se intercambian. P registra el segundo swap.',
+      formula: '\\[\\text{Pivoteo parcial: } |a_{kk}| \\text{ debe ser el mayor de la columna}\\]',
       show: ['A', 'L', 'P'],
       matrices: {
         A: [
           [c('2'), c('-1'), c('0'), c('1')],
           [c('0'), c('2', 'active'), c('-1', 'active'), c('1', 'active')],
-          [c('0'), c('0', 'computed'), c('5/4', 'active'), c('-7/4', 'active')],
-          [c('0'), c('0', 'computed'), c('-1/4', 'active'), c('3/4', 'active')],
+          [c('0'), c('1/2', 'active'), c('1', 'active'), c('-3/2', 'active')],
+          [c('0'), c('3/2'), c('-1'), c('3/2')],
         ],
         L: [
           [c('1'), c('0'), c('0'), c('0')],
           [c('0', 'active'), c('1'), c('0'), c('0')],
-          [c('1/2', 'active'), c('1/4', 'active'), c('1'), c('0')],
-          [c('1/2'), c('3/4', 'active'), G(), c('1')],
+          [c('1/2', 'active'), G(), c('1'), c('0')],
+          [c('1/2'), G(), G(), c('1')],
         ],
         P: [
           [c('0'), c('0'), c('1'), c('0')],
@@ -207,7 +225,32 @@
       },
     },
     {
-      title: 'Iteración 3 — Eliminación columna 3 (sin pivoteo)',
+      title: 'Eliminación 2 — Columna 2',
+      text:
+        'Con el nuevo pivote a₂₂ = 2:\n' +
+        '  • m₃₂ = (1/2) / 2 = 1/4\n' +
+        '  • m₄₂ = (3/2) / 2 = 3/4\n' +
+        '\n' +
+        'Aplicamos E_i ← E_i − m_{i2}·E₂ a las filas 3 y 4.',
+      formula: '\\[m_{i2} = \\tfrac{a_{i2}}{a_{22}}, \\quad E_i \\leftarrow E_i - m_{i2}\\, E_2\\]',
+      show: ['A', 'L'],
+      matrices: {
+        A: [
+          [c('2'), c('-1'), c('0'), c('1')],
+          [c('0'), c('2'), c('-1'), c('1')],
+          [c('0'), c('0', 'computed'), c('5/4', 'active'), c('-7/4', 'active')],
+          [c('0'), c('0', 'computed'), c('-1/4', 'active'), c('3/4', 'active')],
+        ],
+        L: [
+          [c('1'), c('0'), c('0'), c('0')],
+          [c('0'), c('1'), c('0'), c('0')],
+          [c('1/2'), c('1/4', 'active'), c('1'), c('0')],
+          [c('1/2'), c('3/4', 'active'), G(), c('1')],
+        ],
+      },
+    },
+    {
+      title: 'Eliminación 3 — Columna 3 (sin pivoteo)',
       text:
         'Pivote a₃₃ = 5/4. En la columna 3 (filas 3-4) el mayor es |5/4|,\n' +
         'ya está en la fila correcta → no hace falta pivotear.\n' +
