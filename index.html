@@ -387,17 +387,58 @@
           <h2 class="section__title">Ejemplo Completo Resuelto</h2>
           <p class="lede">
             Resolver el sistema \(A\mathbf{x}=\mathbf{b}\) usando factorización
-            LU. Navegá los pasos con los chips o usá los controles para
-            reproducir la animación.
+            LU. Elegí un ejemplo y navegá los pasos con los chips o usá los
+            controles para reproducir la animación.
           </p>
 
-          <article class="card card--feature">
-            <div class="math-block big">
-              \[A = \begin{bmatrix} 2 & -1 & 1 \\ 3 & 3 & 9 \\ 3 & 3 & 5
-              \end{bmatrix},\quad \mathbf{b} = \begin{bmatrix} -1 \\ 0 \\ 4
-              \end{bmatrix}\]
-            </div>
-          </article>
+          <div
+            class="example-selector"
+            role="tablist"
+            aria-label="Elegir ejemplo"
+          >
+            <button
+              type="button"
+              class="example-tab is-active"
+              data-example="3x3"
+              role="tab"
+              aria-selected="true"
+            >
+              Ejemplo 3×3
+            </button>
+            <button
+              type="button"
+              class="example-tab"
+              data-example="4x4"
+              role="tab"
+              aria-selected="false"
+            >
+              Ejemplo 4×4 con pivoteo
+            </button>
+          </div>
+
+          <div class="example-intro is-active" data-example="3x3">
+            <article class="card card--feature">
+              <div class="math-block big">
+                \[A = \begin{bmatrix} 2 & -1 & 1 \\ 3 & 3 & 9 \\ 3 & 3 & 5
+                \end{bmatrix},\quad \mathbf{b} = \begin{bmatrix} -1 \\ 0 \\ 4
+                \end{bmatrix}\]
+              </div>
+            </article>
+          </div>
+
+          <div class="example-intro" data-example="4x4">
+            <article class="card card--feature">
+              <div class="math-block big">
+                \[A = \begin{bmatrix} 0 & 2 & -1 & 1 \\ 1 & 0 & 1 & -1 \\ 2 & -1
+                & 0 & 1 \\ 1 & 1 & -1 & 2 \end{bmatrix},\quad \mathbf{b} =
+                \begin{bmatrix} -1 \\ 0 \\ 6 \\ 4 \end{bmatrix}\]
+              </div>
+              <p class="muted small">
+                El pivote \(a_{11}=0\) impide la eliminación directa: hace falta
+                intercambiar filas. La factorización resultante es \(PA = LU\).
+              </p>
+            </article>
+          </div>
 
           <div
             class="example-stage"
@@ -450,7 +491,11 @@
             </div>
           </div>
 
-          <article class="card card--feature result-card" id="result-card">
+          <article
+            class="card card--feature result-card is-active"
+            id="result-card-3x3"
+            data-example="3x3"
+          >
             <h3>Solución</h3>
             <div class="math-block big">
               \[\boxed{\mathbf{x} = \begin{bmatrix} 1 \\ 2 \\ -1
@@ -460,6 +505,24 @@
               <li>Fila 1: \(2(1)+(-1)(2)+1(-1) = -1\) ✓</li>
               <li>Fila 2: \(3(1)+3(2)+9(-1) = 0\) ✓</li>
               <li>Fila 3: \(3(1)+3(2)+5(-1) = 4\) ✓</li>
+            </ul>
+          </article>
+
+          <article
+            class="card card--feature result-card"
+            id="result-card-4x4"
+            data-example="4x4"
+          >
+            <h3>Solución</h3>
+            <div class="math-block big">
+              \[\boxed{\mathbf{x} = \begin{bmatrix} 1 \\ -1 \\ 2 \\ 3
+              \end{bmatrix}}\]
+            </div>
+            <ul class="bullets check-list">
+              <li>Fila 1: \(0(1)+2(-1)+(-1)(2)+1(3) = -1\) ✓</li>
+              <li>Fila 2: \(1(1)+0(-1)+1(2)+(-1)(3) = 0\) ✓</li>
+              <li>Fila 3: \(2(1)+(-1)(-1)+0(2)+1(3) = 6\) ✓</li>
+              <li>Fila 4: \(1(1)+1(-1)+(-1)(2)+2(3) = 4\) ✓</li>
             </ul>
           </article>
         </div>

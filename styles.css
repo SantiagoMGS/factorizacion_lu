@@ -575,6 +575,61 @@ body {
   color: var(--text);
 }
 
+/* ===================== EXAMPLE SELECTOR (toggle 3x3 / 4x4) ===================== */
+.example-selector {
+  display: inline-flex;
+  gap: 0.3rem;
+  padding: 0.35rem;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  margin: 0 0 1.25rem;
+}
+
+.example-tab {
+  padding: 0.55rem 1.2rem;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  font-family: inherit;
+  letter-spacing: 0.01em;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.25s ease;
+}
+
+.example-tab:hover {
+  color: var(--text);
+}
+
+.example-tab.is-active {
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  color: white;
+  box-shadow: 0 6px 20px -6px var(--accent-glow);
+}
+
+.example-intro:not(.is-active) {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .example-selector {
+    display: flex;
+    width: 100%;
+  }
+  .example-tab {
+    flex: 1;
+    text-align: center;
+    padding: 0.6rem 0.5rem;
+    font-size: 0.82rem;
+  }
+}
+
 /* ===================== EXAMPLE STAGE (interactivo) ===================== */
 .example-stage {
   background: var(--card-bg);
@@ -943,8 +998,12 @@ body {
     margin-top 0.4s ease;
 }
 
-.result-card.is-revealed {
-  max-height: 1200px;
+.result-card:not(.is-active) {
+  display: none;
+}
+
+.result-card.is-active.is-revealed {
+  max-height: 1400px;
   opacity: 1;
   padding: 2rem;
   margin-top: 1.5rem;
