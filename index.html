@@ -629,23 +629,23 @@
             álgebra lineal numérica.
           </p>
 
-          <div class="grid grid-2">
-            <article class="card">
-              <h3>Cálculo del determinante</h3>
-              <p>
-                Como \(A = LU\) (o \(PA = LU\) con \(k\) intercambios de fila),
-                y el determinante de un producto es el producto de los
-                determinantes:
-              </p>
-              <div class="math-block">
-                \[\det(A) = (-1)^{k} \prod_{i=1}^{n} u_{ii}\]
-              </div>
-              <p>
-                \(L\) tiene unos en la diagonal (Doolittle) → \(\det(L) = 1\).
-                Como \(U\) es triangular superior, su determinante es el
-                producto de su diagonal. Cada intercambio de filas le cambia el
-                signo.
-              </p>
+          <article class="card">
+            <h3>Aplicación 1 — Cálculo del determinante</h3>
+            <p>
+              Como \(A = LU\) (o \(PA = LU\) con \(k\) intercambios de fila), y
+              el determinante de un producto es el producto de los
+              determinantes:
+            </p>
+            <div class="math-block">
+              \[\det(A) = (-1)^{k} \prod_{i=1}^{n} u_{ii}\]
+            </div>
+            <p>
+              \(L\) tiene unos en la diagonal (Doolittle) → \(\det(L) = 1\).
+              Como \(U\) es triangular superior, su determinante es el producto
+              de su diagonal. Cada intercambio de filas le cambia el signo.
+            </p>
+
+            <div class="grid grid-2">
               <aside class="callout callout--inline">
                 <strong>Ejemplo 3×3:</strong> con
                 \(U = \begin{bmatrix} 2 & -1 & 1 \\ 0 & 9/2 & 15/2 \\ 0 & 0 & -4
@@ -662,38 +662,51 @@
                   \cdot \tfrac{2}{5} = 2\]
                 </div>
               </aside>
-            </article>
+            </div>
+          </article>
 
-            <article class="card">
-              <h3>Cálculo de la inversa \(A^{-1}\)</h3>
-              <p>
-                La inversa \(A^{-1}\) es la matriz \(X\) tal que \(AX = I\).
-                Por columnas, esto equivale a resolver \(n\) sistemas
-                independientes:
-              </p>
-              <div class="math-block">
-                \[A\, \mathbf{x}_j = \mathbf{e}_j, \quad j = 1, \ldots, n\]
+          <article class="card">
+            <h3>Aplicación 2 — Cálculo de la inversa \(A^{-1}\)</h3>
+            <div class="grid grid-2">
+              <div>
+                <p>
+                  La inversa \(A^{-1}\) es la matriz \(X\) tal que \(AX = I\).
+                  Por columnas, esto equivale a resolver \(n\) sistemas
+                  independientes:
+                </p>
+                <div class="math-block">
+                  \[A\, \mathbf{x}_j = \mathbf{e}_j, \quad j = 1, \ldots, n\]
+                </div>
+                <p>
+                  donde \(\mathbf{e}_j\) es la \(j\)-ésima columna de la
+                  identidad, y \(\mathbf{x}_j\) será la \(j\)-ésima columna de
+                  \(A^{-1}\). <strong>Todos los sistemas usan la misma
+                  factorización LU</strong> → cada columna cuesta \(O(n^{2})\),
+                  no \(O(n^{3})\).
+                </p>
               </div>
-              <p>
-                donde \(\mathbf{e}_j\) es la \(j\)-ésima columna de la
-                identidad, y \(\mathbf{x}_j\) será la \(j\)-ésima columna de
-                \(A^{-1}\). <strong>Todos los sistemas usan la misma
-                factorización LU</strong> → cada columna cuesta \(O(n^{2})\),
-                no \(O(n^{3})\).
-              </p>
-              <p>
-                <strong>Costo total para invertir:</strong> \(O(n^{3}/3)\) por
-                la factorización \(+\) \(n \cdot O(n^{2})\) por las
-                sustituciones \(=\) \(O(n^{3})\).
-              </p>
-              <p class="muted">
-                Regla práctica: si sólo necesitás resolver
-                \(A\mathbf{x} = \mathbf{b}\), <em>no calcules la inversa</em>
-                — resolvé directo con LU. Calcular \(A^{-1}\) sólo se justifica
-                si vas a usarla repetidamente.
-              </p>
-            </article>
-          </div>
+              <aside class="callout callout--inline">
+                <strong>Costo total para invertir</strong>
+                <ul class="bullets">
+                  <li>\(O(n^{3}/3)\) por la factorización (una sola vez)</li>
+                  <li>
+                    \(n \cdot O(n^{2})\) por las \(n\) sustituciones
+                    (una columna cada una)
+                  </li>
+                  <li>
+                    Total: \(O(n^{3})\) — mucho mejor que \(O(n!)\) de
+                    cofactores.
+                  </li>
+                </ul>
+                <p class="muted small">
+                  Regla práctica: si sólo necesitás resolver
+                  \(A\mathbf{x}=\mathbf{b}\), <em>no calcules la inversa</em>
+                  — resolvé directo con LU. \(A^{-1}\) sólo se justifica si la
+                  vas a usar repetidamente.
+                </p>
+              </aside>
+            </div>
+          </article>
 
           <h3 class="subhead">Puntos clave para recordar</h3>
           <div class="grid grid-2">
