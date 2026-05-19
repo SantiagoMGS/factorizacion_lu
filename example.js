@@ -141,15 +141,18 @@
   // ===================================================================
   const STEPS_4X4 = [
     {
-      title: 'Pivoteo 1 — Intercambio filas 1 ↔ 3',
+      title: 'Pivoteo — Intercambio filas 1 ↔ 3',
       text:
-        'El pivote a₁₁ = 0 → no podemos dividir.\n' +
-        'Buscamos en la columna 1 el elemento de mayor valor absoluto:\n' +
-        '|2| en la fila 3 es el mayor.\n' +
+        'El pivote a₁₁ = 0 → no podemos dividir por cero. Buscamos en la\n' +
+        'columna 1 una fila con valor no-nulo: la fila 3 tiene un 2.\n' +
         '\n' +
         'Intercambiamos filas 1 y 3, y registramos el cambio en P.\n' +
-        'L sigue siendo la identidad — todavía no calculamos multiplicadores.',
-      formula: '\\[\\text{Si } a_{kk}=0 \\text{ o muy chico, intercambiar filas según } |a_{ik}| \\text{ máximo}\\]',
+        'L sigue siendo la identidad — todavía no calculamos multiplicadores.\n' +
+        '\n' +
+        'Nota: en cálculo manual sólo pivoteamos cuando es necesario (pivote\n' +
+        'igual a cero). Las implementaciones computacionales suelen pivotear\n' +
+        'siempre eligiendo el mayor |valor| por estabilidad numérica.',
+      formula: '\\[\\text{Si } a_{kk}=0, \\text{ intercambiar con una fila cuyo elemento en la columna } k \\text{ sea no-nulo}\\]',
       show: ['A', 'P'],
       matrices: {
         A: [
@@ -171,10 +174,10 @@
       text:
         'Con el nuevo pivote a₁₁ = 2 calculamos los multiplicadores:\n' +
         '  • m₂₁ = 1/2\n' +
-        '  • m₃₁ = 0\n' +
+        '  • m₃₁ = 0  (no hace falta operar esta fila)\n' +
         '  • m₄₁ = 1/2\n' +
         '\n' +
-        'Aplicamos E_i ← E_i − m_{i1}·E₁ a las filas 2, 3 y 4.\n' +
+        'Aplicamos E_i ← E_i − m_{i1}·E₁ a las filas 2 y 4.\n' +
         'Los multiplicadores quedan registrados en L.',
       formula: '\\[m_{i1} = \\tfrac{a_{i1}}{a_{11}}, \\quad E_i \\leftarrow E_i - m_{i1}\\, E_1\\]',
       show: ['A', 'L'],
@@ -194,42 +197,13 @@
       },
     },
     {
-      title: 'Pivoteo 2 — Intercambio filas 2 ↔ 3',
-      text:
-        'Pivote actual a₂₂ = 1/2 es chico. En la columna 2 (filas 2-4) el\n' +
-        'mayor en valor absoluto es |2| en la fila 3. Intercambiamos filas 2 y 3.\n' +
-        '\n' +
-        '¡Importante! También se intercambian las entradas ya calculadas de L\n' +
-        '(columna 1): l₂₁ y l₃₁ se intercambian. P registra el segundo swap.',
-      formula: '\\[\\text{Pivoteo parcial: } |a_{kk}| \\text{ debe ser el mayor de la columna}\\]',
-      show: ['A', 'L', 'P'],
-      matrices: {
-        A: [
-          [c('2'), c('-1'), c('0'), c('1')],
-          [c('0'), c('2', 'active'), c('-1', 'active'), c('1', 'active')],
-          [c('0'), c('1/2', 'active'), c('1', 'active'), c('-3/2', 'active')],
-          [c('0'), c('3/2'), c('-1'), c('3/2')],
-        ],
-        L: [
-          [c('1'), c('0'), c('0'), c('0')],
-          [c('0', 'active'), c('1'), c('0'), c('0')],
-          [c('1/2', 'active'), G(), c('1'), c('0')],
-          [c('1/2'), G(), G(), c('1')],
-        ],
-        P: [
-          [c('0'), c('0'), c('1'), c('0')],
-          [c('1', 'active'), c('0'), c('0'), c('0')],
-          [c('0'), c('1', 'active'), c('0'), c('0')],
-          [c('0'), c('0'), c('0'), c('1')],
-        ],
-      },
-    },
-    {
       title: 'Eliminación 2 — Columna 2',
       text:
-        'Con el nuevo pivote a₂₂ = 2:\n' +
-        '  • m₃₂ = (1/2) / 2 = 1/4\n' +
-        '  • m₄₂ = (3/2) / 2 = 3/4\n' +
+        'Pivote a₂₂ = 1/2 ≠ 0 → no necesitamos pivotear.\n' +
+        '\n' +
+        'Multiplicadores:\n' +
+        '  • m₃₂ = 2 / (1/2) = 4\n' +
+        '  • m₄₂ = (3/2) / (1/2) = 3\n' +
         '\n' +
         'Aplicamos E_i ← E_i − m_{i2}·E₂ a las filas 3 y 4.',
       formula: '\\[m_{i2} = \\tfrac{a_{i2}}{a_{22}}, \\quad E_i \\leftarrow E_i - m_{i2}\\, E_2\\]',
@@ -237,70 +211,68 @@
       matrices: {
         A: [
           [c('2'), c('-1'), c('0'), c('1')],
-          [c('0'), c('2'), c('-1'), c('1')],
-          [c('0'), c('0', 'computed'), c('5/4', 'active'), c('-7/4', 'active')],
-          [c('0'), c('0', 'computed'), c('-1/4', 'active'), c('3/4', 'active')],
+          [c('0'), c('1/2'), c('1'), c('-3/2')],
+          [c('0'), c('0', 'computed'), c('-5', 'active'), c('7', 'active')],
+          [c('0'), c('0', 'computed'), c('-4', 'active'), c('6', 'active')],
         ],
         L: [
           [c('1'), c('0'), c('0'), c('0')],
-          [c('0'), c('1'), c('0'), c('0')],
-          [c('1/2'), c('1/4', 'active'), c('1'), c('0')],
-          [c('1/2'), c('3/4', 'active'), G(), c('1')],
+          [c('1/2'), c('1'), c('0'), c('0')],
+          [c('0'), c('4', 'active'), c('1'), c('0')],
+          [c('1/2'), c('3', 'active'), G(), c('1')],
         ],
       },
     },
     {
-      title: 'Eliminación 3 — Columna 3 (sin pivoteo)',
+      title: 'Eliminación 3 — Columna 3',
       text:
-        'Pivote a₃₃ = 5/4. En la columna 3 (filas 3-4) el mayor es |5/4|,\n' +
-        'ya está en la fila correcta → no hace falta pivotear.\n' +
+        'Pivote a₃₃ = −5 ≠ 0 → tampoco hace falta pivotear.\n' +
         '\n' +
-        '  • m₄₃ = (−1/4)/(5/4) = −1/5\n' +
-        '  • E₄ ← E₄ − (−1/5)·E₃\n' +
+        '  • m₄₃ = (−4) / (−5) = 4/5\n' +
+        '  • E₄ ← E₄ − (4/5)·E₃\n' +
         '\n' +
         'La matriz queda triangular superior: ya es U.',
-      formula: '\\[E_4 \\leftarrow E_4 - m_{43}\\, E_3, \\quad m_{43} = -1/5\\]',
+      formula: '\\[E_4 \\leftarrow E_4 - m_{43}\\, E_3, \\quad m_{43} = 4/5\\]',
       show: ['A', 'L'],
       matrices: {
         A: [
           [c('2'), c('-1'), c('0'), c('1')],
-          [c('0'), c('2'), c('-1'), c('1')],
-          [c('0'), c('0'), c('5/4'), c('-7/4')],
+          [c('0'), c('1/2'), c('1'), c('-3/2')],
+          [c('0'), c('0'), c('-5'), c('7')],
           [c('0'), c('0'), c('0', 'computed'), c('2/5', 'active')],
         ],
         L: [
           [c('1'), c('0'), c('0'), c('0')],
-          [c('0'), c('1'), c('0'), c('0')],
-          [c('1/2'), c('1/4'), c('1'), c('0')],
-          [c('1/2'), c('3/4'), c('-1/5', 'active'), c('1')],
+          [c('1/2'), c('1'), c('0'), c('0')],
+          [c('0'), c('4'), c('1'), c('0')],
+          [c('1/2'), c('3'), c('4/5', 'active'), c('1')],
         ],
       },
     },
     {
       title: 'Factorización P · A = L · U',
       text:
-        'Con la permutación P, la factorización es PA = LU.\n' +
-        'P registró los intercambios de fila (1↔3 y luego 2↔3).\n' +
-        'Para resolver A·x = b reescribimos como L·U·x = P·b.',
+        'Con la permutación P (un solo intercambio: filas 1↔3) tenemos\n' +
+        'PA = LU. Para resolver A·x = b reescribimos como L·U·x = P·b.',
       formula: '\\[P\\,A = L\\,U \\quad \\Longrightarrow \\quad L\\,U\\,\\mathbf{x} = P\\,\\mathbf{b}\\]',
       show: ['P', 'L', 'U'],
       matrices: {
         P: [
           [c('0'), c('0'), c('1', 'active'), c('0')],
-          [c('1', 'active'), c('0'), c('0'), c('0')],
           [c('0'), c('1', 'active'), c('0'), c('0')],
+          [c('1', 'active'), c('0'), c('0'), c('0')],
           [c('0'), c('0'), c('0'), c('1', 'active')],
         ],
         L: [
           [c('1', 'active'), c('0'), c('0'), c('0')],
-          [c('0'), c('1', 'active'), c('0'), c('0')],
-          [c('1/2', 'active'), c('1/4', 'active'), c('1', 'active'), c('0')],
-          [c('1/2', 'active'), c('3/4', 'active'), c('-1/5', 'active'), c('1', 'active')],
+          [c('1/2', 'active'), c('1', 'active'), c('0'), c('0')],
+          [c('0'), c('4', 'active'), c('1', 'active'), c('0')],
+          [c('1/2', 'active'), c('3', 'active'), c('4/5', 'active'), c('1', 'active')],
         ],
         U: [
           [c('2', 'active'), c('-1', 'active'), c('0'), c('1', 'active')],
-          [c('0'), c('2', 'active'), c('-1', 'active'), c('1', 'active')],
-          [c('0'), c('0'), c('5/4', 'active'), c('-7/4', 'active')],
+          [c('0'), c('1/2', 'active'), c('1', 'active'), c('-3/2', 'active')],
+          [c('0'), c('0'), c('-5', 'active'), c('7', 'active')],
           [c('0'), c('0'), c('0'), c('2/5', 'active')],
         ],
       },
@@ -308,23 +280,23 @@
     {
       title: 'Sustitución hacia adelante: L · y = P·b',
       text:
-        'Primero permutamos b según P: Pb = [6, −1, 0, 4]ᵀ.\n' +
+        'Primero permutamos b según P: Pb = [6, 0, −1, 4]ᵀ.\n' +
         'Luego resolvemos L·y = Pb de arriba hacia abajo:\n' +
         '  • y₁ = 6\n' +
-        '  • y₂ = −1 − 0·6 = −1\n' +
-        '  • y₃ = 0 − (1/2)·6 − (1/4)·(−1) = −11/4\n' +
-        '  • y₄ = 4 − (1/2)·6 − (3/4)·(−1) − (−1/5)·(−11/4) = 6/5',
+        '  • y₂ = 0 − (1/2)·6 = −3\n' +
+        '  • y₃ = −1 − 0·6 − 4·(−3) = 11\n' +
+        '  • y₄ = 4 − (1/2)·6 − 3·(−3) − (4/5)·11 = 6/5',
       formula: '\\[y_i = (Pb)_i - \\sum_{j<i} l_{ij}\\, y_j\\]',
       show: ['L', 'Pb', 'y'],
       matrices: {
         L: [
           [c('1'), c('0'), c('0'), c('0')],
-          [c('0'), c('1'), c('0'), c('0')],
-          [c('1/2'), c('1/4'), c('1'), c('0')],
-          [c('1/2'), c('3/4'), c('-1/5'), c('1')],
+          [c('1/2'), c('1'), c('0'), c('0')],
+          [c('0'), c('4'), c('1'), c('0')],
+          [c('1/2'), c('3'), c('4/5'), c('1')],
         ],
-        Pb: [[c('6', 'active')], [c('-1', 'active')], [c('0', 'active')], [c('4', 'active')]],
-        y: [[c('6', 'active')], [c('-1', 'active')], [c('-11/4', 'active')], [c('6/5', 'active')]],
+        Pb: [[c('6', 'active')], [c('0', 'active')], [c('-1', 'active')], [c('4', 'active')]],
+        y: [[c('6', 'active')], [c('-3', 'active')], [c('11', 'active')], [c('6/5', 'active')]],
       },
     },
     {
@@ -332,19 +304,19 @@
       text:
         'Resolvemos de abajo hacia arriba:\n' +
         '  • x₄ = (6/5) / (2/5) = 3\n' +
-        '  • x₃ = (−11/4 − (−7/4)·3) / (5/4) = 2\n' +
-        '  • x₂ = (−1 − (−1)·2 − 1·3) / 2 = −1\n' +
+        '  • x₃ = (11 − 7·3) / (−5) = 2\n' +
+        '  • x₂ = (−3 − 1·2 − (−3/2)·3) / (1/2) = −1\n' +
         '  • x₁ = (6 − (−1)·(−1) − 0·2 − 1·3) / 2 = 1',
       formula: '\\[x_i = \\frac{1}{u_{ii}}\\left(y_i - \\sum_{j>i} u_{ij}\\, x_j\\right)\\]',
       show: ['U', 'y', 'x'],
       matrices: {
         U: [
           [c('2'), c('-1'), c('0'), c('1')],
-          [c('0'), c('2'), c('-1'), c('1')],
-          [c('0'), c('0'), c('5/4'), c('-7/4')],
+          [c('0'), c('1/2'), c('1'), c('-3/2')],
+          [c('0'), c('0'), c('-5'), c('7')],
           [c('0'), c('0'), c('0'), c('2/5')],
         ],
-        y: [[c('6')], [c('-1')], [c('-11/4')], [c('6/5')]],
+        y: [[c('6')], [c('-3')], [c('11')], [c('6/5')]],
         x: [
           [c('1', 'active')],
           [c('-1', 'active')],
