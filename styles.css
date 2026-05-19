@@ -344,8 +344,17 @@ body {
 }
 
 .callout--inline {
+  display: block;
   margin: 1rem 0 0;
   padding: 1rem 1.25rem;
+}
+
+.callout--inline > * + * {
+  margin-top: 0.6rem;
+}
+
+.callout--inline .math-block {
+  margin: 0.6rem 0 0;
 }
 
 /* ===================== LISTS ===================== */
