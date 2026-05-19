@@ -129,7 +129,13 @@
     {
       title: 'Verificación — A · x = b',
       text:
-        'Sustituyendo x en A·x recuperamos exactamente b.\n' +
+        'Sustituyendo x = (1, 2, −1)ᵀ en cada ecuación de A · x = b:\n' +
+        '\n' +
+        '  • Fila 1:  2(1) + (−1)(2) + 1(−1) = 2 − 2 − 1 = −1  ✓\n' +
+        '  • Fila 2:  3(1) + 3(2) + 9(−1) = 3 + 6 − 9 = 0  ✓\n' +
+        '  • Fila 3:  3(1) + 3(2) + 5(−1) = 3 + 6 − 5 = 4  ✓\n' +
+        '\n' +
+        'Las 3 ecuaciones se satisfacen → x es la solución correcta.\n' +
         'La factorización LU permite resolver futuros sistemas con la misma A\n' +
         'en sólo O(n²) operaciones por cada nuevo vector b.',
       formula: '\\[\\mathbf{x} = (1,\\; 2,\\; -1)^T\\]',
@@ -345,9 +351,15 @@
     {
       title: 'Verificación — A · x = b',
       text:
-        'Sustituyendo x = (1, −1, 2, 3)ᵀ en el sistema original A·x recuperamos\n' +
-        'exactamente b = (−1, 0, 6, 4)ᵀ. El pivoteo permitió que el algoritmo\n' +
-        'funcionara aún partiendo de a₁₁ = 0.',
+        'Sustituyendo x = (1, −1, 2, 3)ᵀ en cada ecuación del sistema original:\n' +
+        '\n' +
+        '  • Fila 1:  0(1) + 2(−1) + (−1)(2) + 1(3) = 0 − 2 − 2 + 3 = −1  ✓\n' +
+        '  • Fila 2:  1(1) + 0(−1) + 1(2) + (−1)(3) = 1 + 0 + 2 − 3 = 0  ✓\n' +
+        '  • Fila 3:  2(1) + (−1)(−1) + 0(2) + 1(3) = 2 + 1 + 0 + 3 = 6  ✓\n' +
+        '  • Fila 4:  1(1) + 1(−1) + (−1)(2) + 2(3) = 1 − 1 − 2 + 6 = 4  ✓\n' +
+        '\n' +
+        'Las 4 ecuaciones se satisfacen → recuperamos b = (−1, 0, 6, 4)ᵀ.\n' +
+        'El pivoteo permitió que el algoritmo funcionara aún partiendo de a₁₁ = 0.',
       formula: '\\[\\mathbf{x} = (1,\\; -1,\\; 2,\\; 3)^T\\]',
       show: ['x'],
       matrices: {
