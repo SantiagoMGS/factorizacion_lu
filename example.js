@@ -13,6 +13,10 @@
     Pb: 'Pb',
     y: 'y',
     x: 'x',
+    y_sym: 'y',
+    x_sym: 'x',
+    y_res: 'resultado',
+    x_res: 'resultado',
   };
 
   // ===================================================================
@@ -83,39 +87,43 @@
     {
       title: 'Sustitución hacia adelante: L · y = b',
       text:
-        'Resolvemos de arriba hacia abajo:\n' +
+        'Planteamos la ecuación L · y = b con y como vector de incógnitas\n' +
+        '[y₁, y₂, y₃]ᵀ. Resolvemos de arriba hacia abajo:\n' +
         '  • y₁ = b₁ = −1\n' +
         '  • y₂ = 0 − (3/2)·(−1) = 3/2\n' +
         '  • y₃ = 4 − (3/2)·(−1) − 1·(3/2) = 4',
       formula: '\\[y_i = b_i - \\sum_{j<i} l_{ij}\\, y_j\\]',
-      show: ['L', 'b', 'y'],
+      show: ['L', 'y_sym', 'b', 'y_res'],
       matrices: {
         L: [
           [c('1'), c('0'), c('0')],
           [c('3/2'), c('1'), c('0')],
           [c('3/2'), c('1'), c('1')],
         ],
+        y_sym: [[c('y₁')], [c('y₂')], [c('y₃')]],
         b: [[c('-1')], [c('0')], [c('4')]],
-        y: [[c('-1', 'active')], [c('3/2', 'active')], [c('4', 'active')]],
+        y_res: [[c('-1', 'active')], [c('3/2', 'active')], [c('4', 'active')]],
       },
     },
     {
       title: 'Sustitución hacia atrás: U · x = y',
       text:
-        'Resolvemos de abajo hacia arriba:\n' +
+        'Planteamos la ecuación U · x = y con x como vector de incógnitas\n' +
+        '[x₁, x₂, x₃]ᵀ. Resolvemos de abajo hacia arriba:\n' +
         '  • x₃ = 4 / (−4) = −1\n' +
         '  • x₂ = (3/2 − (15/2)·(−1)) / (9/2) = 2\n' +
         '  • x₁ = (−1 − (−1)·2 − 1·(−1)) / 2 = 1',
       formula: '\\[x_i = \\frac{1}{u_{ii}}\\left(y_i - \\sum_{j>i} u_{ij}\\, x_j\\right)\\]',
-      show: ['U', 'y', 'x'],
+      show: ['U', 'x_sym', 'y', 'x_res'],
       matrices: {
         U: [
           [c('2'), c('-1'), c('1')],
           [c('0'), c('9/2'), c('15/2')],
           [c('0'), c('0'), c('-4')],
         ],
+        x_sym: [[c('x₁')], [c('x₂')], [c('x₃')]],
         y: [[c('-1')], [c('3/2')], [c('4')]],
-        x: [[c('1', 'active')], [c('2', 'active')], [c('-1', 'active')]],
+        x_res: [[c('1', 'active')], [c('2', 'active')], [c('-1', 'active')]],
       },
     },
     {
@@ -163,9 +171,9 @@
         ],
         P: [
           [c('0'), c('0'), c('1', 'active'), c('0')],
-          [c('0'), c('1'), c('0'), c('0')],
+          [c('0'), c('1', 'active'), c('0'), c('0')],
           [c('1', 'active'), c('0'), c('0'), c('0')],
-          [c('0'), c('0'), c('0'), c('1')],
+          [c('0'), c('0'), c('0'), c('1', 'active')],
         ],
       },
     },
@@ -281,13 +289,14 @@
       title: 'Sustitución hacia adelante: L · y = P·b',
       text:
         'Primero permutamos b según P: Pb = [6, 0, −1, 4]ᵀ.\n' +
-        'Luego resolvemos L·y = Pb de arriba hacia abajo:\n' +
+        'Planteamos L · y = Pb con y = [y₁, y₂, y₃, y₄]ᵀ y resolvemos\n' +
+        'de arriba hacia abajo:\n' +
         '  • y₁ = 6\n' +
         '  • y₂ = 0 − (1/2)·6 = −3\n' +
         '  • y₃ = −1 − 0·6 − 4·(−3) = 11\n' +
         '  • y₄ = 4 − (1/2)·6 − 3·(−3) − (4/5)·11 = 6/5',
       formula: '\\[y_i = (Pb)_i - \\sum_{j<i} l_{ij}\\, y_j\\]',
-      show: ['L', 'Pb', 'y'],
+      show: ['L', 'y_sym', 'Pb', 'y_res'],
       matrices: {
         L: [
           [c('1'), c('0'), c('0'), c('0')],
@@ -295,20 +304,27 @@
           [c('0'), c('4'), c('1'), c('0')],
           [c('1/2'), c('3'), c('4/5'), c('1')],
         ],
-        Pb: [[c('6', 'active')], [c('0', 'active')], [c('-1', 'active')], [c('4', 'active')]],
-        y: [[c('6', 'active')], [c('-3', 'active')], [c('11', 'active')], [c('6/5', 'active')]],
+        y_sym: [[c('y₁')], [c('y₂')], [c('y₃')], [c('y₄')]],
+        Pb: [[c('6')], [c('0')], [c('-1')], [c('4')]],
+        y_res: [
+          [c('6', 'active')],
+          [c('-3', 'active')],
+          [c('11', 'active')],
+          [c('6/5', 'active')],
+        ],
       },
     },
     {
       title: 'Sustitución hacia atrás: U · x = y',
       text:
-        'Resolvemos de abajo hacia arriba:\n' +
+        'Planteamos U · x = y con x = [x₁, x₂, x₃, x₄]ᵀ y resolvemos\n' +
+        'de abajo hacia arriba:\n' +
         '  • x₄ = (6/5) / (2/5) = 3\n' +
         '  • x₃ = (11 − 7·3) / (−5) = 2\n' +
         '  • x₂ = (−3 − 1·2 − (−3/2)·3) / (1/2) = −1\n' +
         '  • x₁ = (6 − (−1)·(−1) − 0·2 − 1·3) / 2 = 1',
       formula: '\\[x_i = \\frac{1}{u_{ii}}\\left(y_i - \\sum_{j>i} u_{ij}\\, x_j\\right)\\]',
-      show: ['U', 'y', 'x'],
+      show: ['U', 'x_sym', 'y', 'x_res'],
       matrices: {
         U: [
           [c('2'), c('-1'), c('0'), c('1')],
@@ -316,8 +332,9 @@
           [c('0'), c('0'), c('-5'), c('7')],
           [c('0'), c('0'), c('0'), c('2/5')],
         ],
+        x_sym: [[c('x₁')], [c('x₂')], [c('x₃')], [c('x₄')]],
         y: [[c('6')], [c('-3')], [c('11')], [c('6/5')]],
-        x: [
+        x_res: [
           [c('1', 'active')],
           [c('-1', 'active')],
           [c('2', 'active')],
