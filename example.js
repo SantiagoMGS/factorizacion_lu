@@ -129,19 +129,19 @@
     {
       title: 'Verificación — A · x = b',
       text:
-        'Sustituyendo x = (1, 2, −1)ᵀ en cada ecuación de A · x = b:\n' +
-        '\n' +
-        '  • Fila 1:  2(1) + (−1)(2) + 1(−1) = 2 − 2 − 1 = −1  ✓\n' +
-        '  • Fila 2:  3(1) + 3(2) + 9(−1) = 3 + 6 − 9 = 0  ✓\n' +
-        '  • Fila 3:  3(1) + 3(2) + 5(−1) = 3 + 6 − 5 = 4  ✓\n' +
-        '\n' +
-        'Las 3 ecuaciones se satisfacen → x es la solución correcta.\n' +
-        'La factorización LU permite resolver futuros sistemas con la misma A\n' +
-        'en sólo O(n²) operaciones por cada nuevo vector b.',
+        'Sustituyendo x = (1, 2, −1)ᵀ en cada ecuación, A · x reconstruye\n' +
+        'exactamente b. La factorización LU permite resolver futuros sistemas\n' +
+        'con la misma A en sólo O(n²) operaciones por cada nuevo vector b.',
       formula: '\\[\\mathbf{x} = (1,\\; 2,\\; -1)^T\\]',
-      show: ['x'],
-      matrices: {
-        x: [[c('1', 'active')], [c('2', 'active')], [c('-1', 'active')]],
+      show: ['equations'],
+      matrices: {},
+      equations: {
+        label: 'A · x = b',
+        rows: [
+          { lhs: '2(1) + (−1)(2) + 1(−1)', mid: '2 − 2 − 1', rhs: '−1' },
+          { lhs: '3(1) + 3(2) + 9(−1)', mid: '3 + 6 − 9', rhs: '0' },
+          { lhs: '3(1) + 3(2) + 5(−1)', mid: '3 + 6 − 5', rhs: '4' },
+        ],
       },
     },
   ];
@@ -351,23 +351,19 @@
     {
       title: 'Verificación — A · x = b',
       text:
-        'Sustituyendo x = (1, −1, 2, 3)ᵀ en cada ecuación del sistema original:\n' +
-        '\n' +
-        '  • Fila 1:  0(1) + 2(−1) + (−1)(2) + 1(3) = 0 − 2 − 2 + 3 = −1  ✓\n' +
-        '  • Fila 2:  1(1) + 0(−1) + 1(2) + (−1)(3) = 1 + 0 + 2 − 3 = 0  ✓\n' +
-        '  • Fila 3:  2(1) + (−1)(−1) + 0(2) + 1(3) = 2 + 1 + 0 + 3 = 6  ✓\n' +
-        '  • Fila 4:  1(1) + 1(−1) + (−1)(2) + 2(3) = 1 − 1 − 2 + 6 = 4  ✓\n' +
-        '\n' +
-        'Las 4 ecuaciones se satisfacen → recuperamos b = (−1, 0, 6, 4)ᵀ.\n' +
-        'El pivoteo permitió que el algoritmo funcionara aún partiendo de a₁₁ = 0.',
+        'Sustituyendo x = (1, −1, 2, 3)ᵀ en cada ecuación del sistema original\n' +
+        'recuperamos b = (−1, 0, 6, 4)ᵀ. El pivoteo permitió que el algoritmo\n' +
+        'funcionara aún partiendo de a₁₁ = 0.',
       formula: '\\[\\mathbf{x} = (1,\\; -1,\\; 2,\\; 3)^T\\]',
-      show: ['x'],
-      matrices: {
-        x: [
-          [c('1', 'active')],
-          [c('-1', 'active')],
-          [c('2', 'active')],
-          [c('3', 'active')],
+      show: ['equations'],
+      matrices: {},
+      equations: {
+        label: 'A · x = b',
+        rows: [
+          { lhs: '0(1) + 2(−1) + (−1)(2) + 1(3)', mid: '0 − 2 − 2 + 3', rhs: '−1' },
+          { lhs: '1(1) + 0(−1) + 1(2) + (−1)(3)', mid: '1 + 0 + 2 − 3', rhs: '0' },
+          { lhs: '2(1) + (−1)(−1) + 0(2) + 1(3)', mid: '2 + 1 + 0 + 3', rhs: '6' },
+          { lhs: '1(1) + 1(−1) + (−1)(2) + 2(3)', mid: '1 − 1 − 2 + 6', rhs: '4' },
         ],
       },
     },
@@ -442,6 +438,11 @@
     container.innerHTML = '';
 
     step.show.forEach((key) => {
+      if (key === 'equations' && step.equations) {
+        renderEquations(container, step.equations);
+        return;
+      }
+
       const data = step.matrices[key];
       if (!data) return;
 
@@ -468,6 +469,64 @@
       box.appendChild(grid);
       container.appendChild(box);
     });
+  }
+
+  function renderEquations(container, data) {
+    const box = document.createElement('div');
+    box.className = 'verify-box fade-in';
+
+    if (data.label) {
+      const label = document.createElement('p');
+      label.className = 'matrix-box__label';
+      label.textContent = data.label;
+      box.appendChild(label);
+    }
+
+    data.rows.forEach((eq, i) => {
+      const row = document.createElement('div');
+      row.className = 'verify-row';
+
+      const fila = document.createElement('span');
+      fila.className = 'verify-row__index';
+      fila.textContent = `Fila ${i + 1}`;
+      row.appendChild(fila);
+
+      const expr = document.createElement('span');
+      expr.className = 'verify-row__expr';
+      expr.textContent = eq.lhs;
+      row.appendChild(expr);
+
+      if (eq.mid) {
+        const eq1 = document.createElement('span');
+        eq1.className = 'verify-row__op';
+        eq1.textContent = '=';
+        row.appendChild(eq1);
+
+        const mid = document.createElement('span');
+        mid.className = 'verify-row__mid';
+        mid.textContent = eq.mid;
+        row.appendChild(mid);
+      }
+
+      const eq2 = document.createElement('span');
+      eq2.className = 'verify-row__op';
+      eq2.textContent = '=';
+      row.appendChild(eq2);
+
+      const result = document.createElement('span');
+      result.className = 'verify-row__result';
+      result.textContent = eq.rhs;
+      row.appendChild(result);
+
+      const check = document.createElement('span');
+      check.className = 'verify-row__check';
+      check.textContent = '✓';
+      row.appendChild(check);
+
+      box.appendChild(row);
+    });
+
+    container.appendChild(box);
   }
 
   function renderNarrative() {

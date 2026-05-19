@@ -920,6 +920,89 @@ body {
   }
 }
 
+/* --- Verification panel (rows con cada ecuación A·x = b) --- */
+.verify-box {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(95, 224, 163, 0.25);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  flex: 1 1 100%;
+  min-width: 0;
+}
+
+.verify-box .matrix-box__label {
+  color: #5fe0a3;
+}
+
+.verify-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.65rem 0.9rem;
+  background: rgba(0, 0, 0, 0.28);
+  border-left: 3px solid rgba(95, 224, 163, 0.55);
+  border-radius: var(--radius-sm);
+  font-family: ui-monospace, "JetBrains Mono", "Fira Code", Menlo, Consolas,
+    monospace;
+  font-size: 0.92rem;
+  flex-wrap: wrap;
+  color: var(--text);
+}
+
+.verify-row__index {
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  min-width: 3.5rem;
+}
+
+.verify-row__expr {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.verify-row__op {
+  color: var(--text-muted);
+  font-weight: 600;
+  padding: 0 0.1rem;
+}
+
+.verify-row__mid {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.verify-row__result {
+  color: #5fe0a3;
+  font-weight: 700;
+  font-size: 1.02rem;
+  font-variant-numeric: tabular-nums;
+  min-width: 1.6rem;
+  text-align: right;
+}
+
+.verify-row__check {
+  color: #5fe0a3;
+  font-size: 1.1rem;
+  margin-left: auto;
+}
+
+@media (max-width: 600px) {
+  .verify-row {
+    font-size: 0.82rem;
+    gap: 0.35rem;
+    padding: 0.5rem 0.6rem;
+  }
+  .verify-row__check {
+    margin-left: 0.4rem;
+  }
+}
+
 /* --- Controls --- */
 .example-controls {
   display: flex;
