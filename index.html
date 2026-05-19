@@ -617,6 +617,149 @@
         </div>
       </section>
 
+      <!-- ============== 7. CIERRE Y APLICACIONES ADICIONALES ============== -->
+      <section class="section" id="cierre">
+        <div class="container">
+          <h2 class="section__title">
+            Aplicaciones Adicionales y Conclusiones
+          </h2>
+          <p class="lede">
+            La factorización LU no sólo resuelve sistemas \(A\mathbf{x} =
+            \mathbf{b}\): es la base de varios cálculos fundamentales del
+            álgebra lineal numérica.
+          </p>
+
+          <div class="grid grid-2">
+            <article class="card">
+              <h3>Cálculo del determinante</h3>
+              <p>
+                Como \(A = LU\) (o \(PA = LU\) con \(k\) intercambios de fila),
+                y el determinante de un producto es el producto de los
+                determinantes:
+              </p>
+              <div class="math-block">
+                \[\det(A) = (-1)^{k} \prod_{i=1}^{n} u_{ii}\]
+              </div>
+              <p>
+                \(L\) tiene unos en la diagonal (Doolittle) → \(\det(L) = 1\).
+                Como \(U\) es triangular superior, su determinante es el
+                producto de su diagonal. Cada intercambio de filas le cambia el
+                signo.
+              </p>
+              <aside class="callout callout--inline">
+                <strong>Ejemplo 3×3:</strong> con
+                \(U = \begin{bmatrix} 2 & -1 & 1 \\ 0 & 9/2 & 15/2 \\ 0 & 0 & -4
+                \end{bmatrix}\) y \(k=0\) intercambios:
+                <div class="math-block">
+                  \[\det(A) = 2 \cdot \tfrac{9}{2} \cdot (-4) = -36\]
+                </div>
+              </aside>
+              <aside class="callout callout--inline">
+                <strong>Ejemplo 4×4:</strong> diagonal de \(U\):
+                \(\{2,\, 1/2,\, -5,\, 2/5\}\); con \(k=1\) intercambio:
+                <div class="math-block">
+                  \[\det(A) = (-1)^{1} \cdot 2 \cdot \tfrac{1}{2} \cdot (-5)
+                  \cdot \tfrac{2}{5} = 2\]
+                </div>
+              </aside>
+            </article>
+
+            <article class="card">
+              <h3>Cálculo de la inversa \(A^{-1}\)</h3>
+              <p>
+                La inversa \(A^{-1}\) es la matriz \(X\) tal que \(AX = I\).
+                Por columnas, esto equivale a resolver \(n\) sistemas
+                independientes:
+              </p>
+              <div class="math-block">
+                \[A\, \mathbf{x}_j = \mathbf{e}_j, \quad j = 1, \ldots, n\]
+              </div>
+              <p>
+                donde \(\mathbf{e}_j\) es la \(j\)-ésima columna de la
+                identidad, y \(\mathbf{x}_j\) será la \(j\)-ésima columna de
+                \(A^{-1}\). <strong>Todos los sistemas usan la misma
+                factorización LU</strong> → cada columna cuesta \(O(n^{2})\),
+                no \(O(n^{3})\).
+              </p>
+              <p>
+                <strong>Costo total para invertir:</strong> \(O(n^{3}/3)\) por
+                la factorización \(+\) \(n \cdot O(n^{2})\) por las
+                sustituciones \(=\) \(O(n^{3})\).
+              </p>
+              <p class="muted">
+                Regla práctica: si sólo necesitás resolver
+                \(A\mathbf{x} = \mathbf{b}\), <em>no calcules la inversa</em>
+                — resolvé directo con LU. Calcular \(A^{-1}\) sólo se justifica
+                si vas a usarla repetidamente.
+              </p>
+            </article>
+          </div>
+
+          <h3 class="subhead">Puntos clave para recordar</h3>
+          <div class="grid grid-2">
+            <article class="card card--accent">
+              <h3>Cuándo conviene usar LU</h3>
+              <ul class="bullets">
+                <li>
+                  <strong>Múltiples sistemas</strong> con la misma \(A\) y
+                  distintos \(\mathbf{b}\): factorizamos una vez, resolvemos
+                  cada uno en \(O(n^{2})\).
+                </li>
+                <li>
+                  <strong>Calcular determinantes</strong> de matrices grandes
+                  sin recurrir a cofactores (que cuestan \(O(n!)\)).
+                </li>
+                <li>
+                  <strong>Invertir matrices</strong>, cuando es estrictamente
+                  necesario hacerlo.
+                </li>
+                <li>
+                  Análisis de <strong>condicionamiento</strong> y estabilidad
+                  numérica.
+                </li>
+              </ul>
+            </article>
+
+            <article class="card card--accent">
+              <h3>Limitaciones y cuidados</h3>
+              <ul class="bullets">
+                <li>
+                  Si algún pivote es <strong>cero</strong>, no se puede
+                  continuar — hay que pivotear y usar \(PA = LU\).
+                </li>
+                <li>
+                  Si \(A\) es <strong>singular</strong>, ningún pivoteo
+                  resuelve el problema: el sistema no tiene solución única.
+                </li>
+                <li>
+                  En cálculo manual: pivotear sólo cuando es necesario. En
+                  implementaciones computacionales: pivoteo parcial
+                  <em>siempre</em>, por estabilidad numérica.
+                </li>
+                <li>
+                  La factorización LU no es única salvo que fijemos una
+                  convención (ej.: Doolittle exige \(l_{ii}=1\)).
+                </li>
+              </ul>
+            </article>
+          </div>
+
+          <aside class="callout callout--theorem">
+            <span class="callout__icon">★</span>
+            <p>
+              <strong>En síntesis.</strong> La factorización LU descompone el
+              costo de la eliminación gaussiana \(O(n^{3}/3)\) en un único paso
+              de pre-procesamiento, y deja cada uso posterior en \(O(n^{2})\).
+              Esa diferencia, multiplicada por miles de sistemas en problemas
+              reales —mallas de elementos finitos, mecánica estructural,
+              circuitos, redes eléctricas, simulaciones físicas— es lo que hace
+              de LU una de las herramientas más usadas del álgebra lineal
+              numérica.
+            </p>
+          </aside>
+        </div>
+      </section>
+
       <footer class="footer">
         <div class="container">
           <p>Métodos Numéricos · Factorización LU</p>
